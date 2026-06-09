@@ -46,7 +46,7 @@ export default function BackgroundMotionGraphics() {
     ctx.scale(dpr, dpr);
 
     // Initial node setup
-    const nodeCount = Math.min(50, Math.floor((dimensions.width * dimensions.height) / 20000) || 15);
+    const nodeCount = Math.min(25, Math.floor((dimensions.width * dimensions.height) / 40000) || 10);
     const nodes: Array<{
       x: number;
       y: number;
@@ -59,26 +59,25 @@ export default function BackgroundMotionGraphics() {
     }> = [];
 
     const colors = [
-      "rgba(148, 163, 184, 0.4)", // slate-400
-      "rgba(245, 158, 11, 0.25)", // amber-500
-      "rgba(100, 116, 139, 0.3)", // slate-500
+      "rgba(148, 163, 184, 0.2)", // slate-400 very subtle
+      "rgba(100, 116, 139, 0.15)", // slate-500 very subtle
     ];
 
     for (let i = 0; i < nodeCount; i++) {
       nodes.push({
         x: Math.random() * dimensions.width,
         y: Math.random() * dimensions.height,
-        vx: (Math.random() - 0.5) * 0.25,
-        vy: (Math.random() - 0.5) * 0.25,
-        radius: Math.random() * 2 + 1.5,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: (Math.random() - 0.5) * 0.15,
+        radius: Math.random() * 1.5 + 1.0,
         pulse: Math.random() * Math.PI,
-        pulseSpeed: 0.01 + Math.random() * 0.02,
+        pulseSpeed: 0.005 + Math.random() * 0.01,
         color: colors[Math.floor(Math.random() * colors.length)],
       });
     }
 
     // Interactive mouse state
-    const mouse = { x: -1000, y: -1000, radius: 150 };
+    const mouse = { x: -1000, y: -1000, radius: 120 };
     const handleMouseMove = (e: MouseEvent) => {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
@@ -98,9 +97,9 @@ export default function BackgroundMotionGraphics() {
       ctx.clearRect(0, 0, dimensions.width, dimensions.height);
 
       // Draw subtle grid lines
-      ctx.strokeStyle = "rgba(226, 232, 240, 0.15)";
+      ctx.strokeStyle = "rgba(226, 232, 240, 0.08)";
       ctx.lineWidth = 0.5;
-      const gridSize = 120;
+      const gridSize = 140;
       for (let x = 0; x < dimensions.width; x += gridSize) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
@@ -136,11 +135,11 @@ export default function BackgroundMotionGraphics() {
         const dist = Math.hypot(dx, dy);
         if (dist < mouse.radius) {
           const force = (mouse.radius - dist) / mouse.radius;
-          node.x -= (dx / dist) * force * 0.3;
-          node.y -= (dy / dist) * force * 0.3;
+          node.x -= (dx / dist) * force * 0.15;
+          node.y -= (dy / dist) * force * 0.15;
         }
 
-        const activeRadius = node.radius + Math.sin(node.pulse) * 0.5;
+        const activeRadius = node.radius + Math.sin(node.pulse) * 0.25;
 
         ctx.fillStyle = node.color;
         ctx.beginPath();
@@ -156,24 +155,13 @@ export default function BackgroundMotionGraphics() {
           const n2 = nodes[j];
           const dist = Math.hypot(n1.x - n2.x, n1.y - n2.y);
 
-          if (dist < 130) {
-            const alpha = (1 - dist / 130) * 0.12;
+          if (dist < 150) {
+            const alpha = (1 - dist / 150) * 0.08;
             ctx.strokeStyle = `rgba(148, 163, 184, ${alpha})`;
             ctx.beginPath();
             ctx.moveTo(n1.x, n1.y);
             ctx.lineTo(n2.x, n2.y);
             ctx.stroke();
-
-            // Render highly subtle flowing signal impulse packets along certain lines
-            if (i % 3 === 0 && dist > 60) {
-              const time = (Date.now() * 0.0008) % 1;
-              const impulseX = n1.x + (n2.x - n1.x) * time;
-              const impulseY = n1.y + (n2.y - n1.y) * time;
-              ctx.fillStyle = "rgba(245, 158, 11, 0.35)"; // amber impulse
-              ctx.beginPath();
-              ctx.arc(impulseX, impulseY, 1.2, 0, Math.PI * 2);
-              ctx.fill();
-            }
           }
         }
       }
@@ -198,24 +186,11 @@ export default function BackgroundMotionGraphics() {
     >
       {/* Floating Glowing Halo Blur Circles */}
       <motion.div
-        className="absolute w-[300px] h-[300px] rounded-full bg-slate-200/10 blur-[100px] top-[8%] left-[5%]"
+        className="absolute w-[300px] h-[300px] rounded-full bg-slate-200/5 blur-[80px] top-[8%] left-[5%]"
         animate={{
-          x: [0, 40, -20, 0],
-          y: [0, -30, 40, 0],
-          scale: [1, 1.1, 0.9, 1],
-        }}
-        transition={{
-          duration: 25,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-      <motion.div
-        className="absolute w-[400px] h-[400px] rounded-full bg-amber-100/5 blur-[120px] top-[30%] right-[8%]"
-        animate={{
-          x: [0, -45, 25, 0],
-          y: [0, 35, -45, 0],
-          scale: [1, 0.95, 1.05, 1],
+          x: [0, 20, -10, 0],
+          y: [0, -15, 20, 0],
+          scale: [1, 1.05, 0.95, 1],
         }}
         transition={{
           duration: 30,
@@ -224,13 +199,13 @@ export default function BackgroundMotionGraphics() {
         }}
       />
       <motion.div
-        className="absolute w-[350px] h-[350px] rounded-full bg-slate-300/8 blur-[100px] bottom-[20%] left-[10%]"
+        className="absolute w-[350px] h-[350px] rounded-full bg-slate-200/5 blur-[90px] bottom-[20%] left-[10%]"
         animate={{
-          x: [0, 30, -30, 0],
-          y: [0, 20, -20, 0],
+          x: [0, 15, -15, 0],
+          y: [0, 10, -10, 0],
         }}
         transition={{
-          duration: 22,
+          duration: 35,
           repeat: Infinity,
           ease: "easeInOut",
         }}
@@ -239,7 +214,7 @@ export default function BackgroundMotionGraphics() {
       <canvas
         ref={canvasRef}
         style={{ width: "100%", height: "100%", display: "block" }}
-        className="opacity-75"
+        className="opacity-50"
       />
     </div>
   );

@@ -1,0 +1,239 @@
+{
+  "users": [
+    {
+      "email": "sachinram6363@gmail.com",
+      "name": "Sachin Ram",
+      "role": "Admin"
+    },
+    {
+      "email": "team@company.com",
+      "name": "Alex Mercer",
+      "role": "Team Member"
+    },
+    {
+      "email": "viewer@company.com",
+      "name": "Sarah Connor",
+      "role": "Viewer"
+    }
+  ],
+  "icpProfiles": [
+    {
+      "id": "icp-1",
+      "name": "German Manufacturing Leader",
+      "industry": "Manufacturing",
+      "country": "Germany",
+      "companySize": "200-500",
+      "revenueRange": "> $10M",
+      "technologiesUsed": "SAP, Siemens MindSphere, Salesforce",
+      "keywords": "Machinery, Automation, Industry 4.0, Logistics",
+      "departments": "Engineering, Operations, Procurement",
+      "jobTitles": "VP Operations, Head of Automation, Chief Procurement Officer"
+    },
+    {
+      "id": "icp-2",
+      "name": "US SaaS Series A/B",
+      "industry": "Software / SaaS",
+      "country": "United States",
+      "companySize": "50-200",
+      "revenueRange": "> $5M",
+      "technologiesUsed": "React, Stripe, HubSpot, AWS",
+      "keywords": "Sales automation, Marketing analytics, Artificial intelligence",
+      "departments": "Sales, Business Development, Engineering",
+      "jobTitles": "VP Sales, Head of Business Development, Sales Director"
+    }
+  ],
+  "companies": [
+    {
+      "id": "comp-1",
+      "name": "Schulz Maschinenbau GmbH",
+      "industry": "Manufacturing",
+      "website": "https://www.schulz-maschinenbau.de",
+      "location": "Stuttgart, Germany",
+      "revenue": "$45M",
+      "employees": 340,
+      "description": "Manufacturer of custom industrial automated machinery and robotic assembly lines for the automotive industry.",
+      "status": "Qualified",
+      "score": 95,
+      "addedAt": "2026-06-01T10:00:00Z",
+      "notes": "Met via initial email. Interested in automated ERP sync. They are currently planning to upgrade their factory floors by Q4 2026."
+    },
+    {
+      "id": "comp-2",
+      "name": "Müller & Söhne Automation",
+      "industry": "Manufacturing",
+      "website": "https://www.mueller-sons-automation.de",
+      "location": "Munich, Germany",
+      "revenue": "$28M",
+      "employees": 220,
+      "description": "Provides high-precision sensors, PLC assemblies, and smart industrial measurement integrations for EU markets.",
+      "status": "New",
+      "score": 89,
+      "addedAt": "2026-06-03T14:30:00Z",
+      "notes": "Enriched. Buying signal detected: Recently hired 3 control system engineers."
+    },
+    {
+      "id": "comp-3",
+      "name": "Summit Logistics Solutions",
+      "industry": "Logistics",
+      "website": "https://www.summitlogistics.com",
+      "location": "Chicago, USA",
+      "revenue": "$75M",
+      "employees": 450,
+      "description": "Third-party logistics operator specializing in temp-controlled pharmaceutical transport and predictive cargo tracking.",
+      "status": "Contacted",
+      "score": 72,
+      "addedAt": "2026-06-05T09:15:00Z",
+      "notes": "LinkedIn outreach sequence standard started."
+    },
+    {
+      "id": "comp-4",
+      "name": "Zeta Analytics Corporation",
+      "industry": "Software / SaaS",
+      "website": "https://www.zetaanalytics.com",
+      "location": "Austin, USA",
+      "revenue": "$14M",
+      "employees": 120,
+      "description": "Cloud-native visual analytics platform designed to aggregate multi-channel ad spend recommendations via heuristic algorithms.",
+      "status": "Meeting Scheduled",
+      "score": 92,
+      "addedAt": "2026-06-07T11:00:00Z"
+    }
+  ],
+  "contacts": [
+    {
+      "id": "cnt-1",
+      "companyId": "comp-1",
+      "name": "Hans Schulz",
+      "role": "Managing Director",
+      "linkedin": "https://linkedin.com/in/hans-schulz-mock",
+      "email": "h.schulz@schulz-maschinenbau.de",
+      "phone": "+49 711 500223"
+    },
+    {
+      "id": "cnt-2",
+      "companyId": "comp-1",
+      "name": "Dieter Brand",
+      "role": "Chief of Operations",
+      "linkedin": "https://linkedin.com/in/dieter-brand-mock",
+      "email": "d.brand@schulz-maschinenbau.de",
+      "phone": "+49 711 500224"
+    },
+    {
+      "id": "cnt-3",
+      "companyId": "comp-2",
+      "name": "Erich Müller",
+      "role": "VP Engineering",
+      "linkedin": "https://linkedin.com/in/erich-mueller-mock",
+      "email": "e.mueller@mueller-sons-automation.de",
+      "phone": "+49 89 224411"
+    },
+    {
+      "id": "cnt-4",
+      "companyId": "comp-3",
+      "name": "Marcus Vance",
+      "role": "VP Supply Chain",
+      "linkedin": "https://linkedin.com/in/marcus-vance-mock",
+      "email": "m.vance@summitlogistics.com",
+      "phone": "+1 312 555 0192"
+    },
+    {
+      "id": "cnt-5",
+      "companyId": "comp-4",
+      "name": "Nora Gilcrest",
+      "role": "VP Marketing & Sales",
+      "linkedin": "https://linkedin.com/in/nora-gilcrest-mock",
+      "email": "n.gilcrest@zetaanalytics.com",
+      "phone": "+1 512 555 3302"
+    }
+  ],
+  "leadScores": {
+    "comp-1": {
+      "companyId": "comp-1",
+      "score": 95,
+      "industryMatch": 100,
+      "sizeMatch": 95,
+      "revenueMatch": 95,
+      "techMatch": 90,
+      "locationMatch": 100,
+      "explanation": "Excellent industry fit (German Manufacturing). Employee count of 340 is securely in target and revenue range of $45M exceeds the minimum ICP threshold. They utilize SAP, perfect match for our operation middleware integrations."
+    },
+    "comp-2": {
+      "companyId": "comp-2",
+      "score": 89,
+      "industryMatch": 100,
+      "sizeMatch": 90,
+      "revenueMatch": 85,
+      "techMatch": 75,
+      "locationMatch": 100,
+      "explanation": "Superb location and industry match. Revenue is healthy ($28M) and within scope. Technologies used could represent lower complexity, but growth signals are highly active."
+    }
+  },
+  "campaigns": [
+    {
+      "id": "camp-1",
+      "name": "German Machinery Auto-Pilot Outreach",
+      "audience": "German Manufacturing Leader",
+      "template": "Automation Solutions & Efficiency",
+      "schedule": "Mon-Fri, 9:00 AM CET",
+      "sentCount": 42,
+      "openRate": 68.2,
+      "replyRate": 24.5,
+      "conversionRate": 11.9,
+      "status": "Active",
+      "createdAt": "2026-06-02T08:00:00Z"
+    },
+    {
+      "id": "camp-2",
+      "name": "US SaaS Tech Stack Integrations",
+      "audience": "US SaaS Series A/B",
+      "template": "Outreach CRM Sync Personalized Pitch",
+      "schedule": "Tuesday & Thursday",
+      "sentCount": 18,
+      "openRate": 55.5,
+      "replyRate": 15,
+      "conversionRate": 5.5,
+      "status": "Active",
+      "createdAt": "2026-06-05T15:00:00Z"
+    }
+  ],
+  "activities": [
+    {
+      "id": "act-1",
+      "type": "lead_discovered",
+      "description": "Discovered and qualified Schulz Maschinenbau GmbH based on 'German Manufacturing' ICP profile.",
+      "timestamp": "2026-06-01T10:05:00Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Schulz Maschinenbau GmbH"
+    },
+    {
+      "id": "act-2",
+      "type": "outreach_generated",
+      "description": "Generated email pitch for Hans Schulz regarding executive operations middleware optimization.",
+      "timestamp": "2026-06-01T10:11:00Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Schulz Maschinenbau GmbH"
+    },
+    {
+      "id": "act-3",
+      "type": "crm_stored",
+      "description": "Stored Müller & Söhne Automation in CRM with status 'New' and score 89.",
+      "timestamp": "2026-06-03T14:32:00Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Müller & Söhne Automation"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notif-1",
+      "message": "Lead Discovery Agent completed qualification for Müller & Söhne Automation (Score: 89)",
+      "read": false,
+      "timestamp": "2026-06-03T14:31:00Z"
+    },
+    {
+      "id": "notif-2",
+      "message": "New booking signal detected for Schulz Maschinenbau (German Manufacturing)",
+      "read": true,
+      "timestamp": "2026-06-01T11:45:00Z"
+    }
+  ]
+}

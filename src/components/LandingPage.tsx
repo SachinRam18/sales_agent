@@ -1,4 +1,8 @@
-import { ArrowRight, CheckCircle2, ShieldCheck, Zap, Users, Search, Target, Mail, ArrowUpRight, Award, HelpCircle } from "lucide-react";
+import { useState } from "react";
+import { 
+  ArrowRight, CheckCircle2, ShieldCheck, Zap, Users, Search, Target, 
+  Mail, ArrowUpRight, Check, Play, Globe, Shield, RefreshCw, BarChart3, Database
+} from "lucide-react";
 import BackgroundMotionGraphics from "./BackgroundMotionGraphics";
 
 interface LandingPageProps {
@@ -7,125 +11,103 @@ interface LandingPageProps {
 }
 
 export default function LandingPage({ onStart, onLogin }: LandingPageProps) {
-  const features = [
-    {
-      icon: <Search className="w-5 h-5 text-slate-800" id="feat-icon-1" />,
-      title: "Agentic Lead Discovery",
-      description: "Automated search crawlers parse company structures, identify direct URLs, and find decision-makers matching your specifications."
-    },
-    {
-      icon: <Target className="w-5 h-5 text-slate-800" id="feat-icon-2" />,
-      title: "ICP Scoring Engine",
-      description: "Instant grading (0-100) based on industry, geographic scope, estimated tool stack compatibility, and team size rules."
-    },
-    {
-      icon: <Zap className="w-5 h-5 text-amber-500" id="feat-icon-3" />,
-      title: "Data Enrichment Agent",
-      description: "Extract high-accuracy corporate metadata, tech stack trackers, dynamic growth signals, and active buying triggers."
-    },
-    {
-      icon: <Mail className="w-5 h-5 text-slate-800" id="feat-icon-4" />,
-      title: "Outreach Sequence Builder",
-      description: "Generate highly personalized outbound emails, LinkedIn invitations, and cross-channel follow-ups optimized for conversion."
-    },
-    {
-      icon: <ShieldCheck className="w-5 h-5 text-slate-800" id="feat-icon-5" />,
-      title: "Auto-Pilot CRM Sync",
-      description: "Prevent duplicates, synchronize lead statuses, keep logs of all sequences, and feed campaigns natively."
-    },
-    {
-      icon: <Users className="w-5 h-5 text-slate-800" id="feat-icon-6" />,
-      title: "Multi-Agent Coordinator",
-      description: "SDR automation orchestrated by collaborative agents (Discovery, Enrichment, Qualification, CRM, Outreach, and Analytics)."
-    }
+  // Simulated interactive preview states for the centerpiece
+  const [selectedIcp, setSelectedIcp] = useState<"germany" | "us">("germany");
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState("Synchronized");
+
+  const handleTriggerSync = () => {
+    setIsSyncing(true);
+    setSyncStatus("Syncing...");
+    setTimeout(() => {
+      setIsSyncing(false);
+      setSyncStatus("HubSpot & Salesforce Updated");
+    }, 1500);
+  };
+
+  const germanyLeads = [
+    { name: "Schulz Maschinenbau GmbH", industry: "Manufacturing", employees: 340, score: 92, status: "CRM Synced", stack: "SAP ERP, AWS", revenue: "€42M" },
+    { name: "Steinbach Automation", industry: "Manufacturing", employees: 210, score: 88, status: "CRM Synced", stack: "Salesforce, Azure", revenue: "€18M" },
+    { name: "Bavaria Logistics Group", industry: "Transportation", employees: 480, score: 79, status: "Qualified", stack: "SAP, AWS", revenue: "€95M" },
+    { name: "KBR Mechanical AG", industry: "Manufacturing", employees: 290, score: 95, status: "CRM Synced", stack: "SAP ERP, AWS", revenue: "€31M" }
   ];
 
-  const pricingPlans = [
+  const usLeads = [
+    { name: "Apex Global Robotics", industry: "Industrial Automation", employees: 410, score: 94, status: "CRM Synced", stack: "HubSpot, AWS", revenue: "$68M" },
+    { name: "Vanguard Tooling Inc.", industry: "Manufacturing", employees: 300, score: 91, status: "CRM Synced", stack: "SAP, Azure", revenue: "$39M" },
+    { name: "Midwest Casting Corp", industry: "Metal Fabrication", employees: 240, score: 85, status: "Qualified", stack: "Salesforce, AWS", revenue: "$22M" },
+    { name: "Pacific Precision Parts", industry: "Manufacturing", employees: 490, score: 76, status: "CRM Synced", stack: "HubSpot, AWS", revenue: "$85M" }
+  ];
+
+  const currentLeads = selectedIcp === "germany" ? germanyLeads : usLeads;
+
+  const features = [
     {
-      name: "Starter",
-      price: "$49",
-      period: "user/month",
-      description: "Ideal for solo founders and small agency teams looking to automate initial reachouts.",
-      features: [
-        "Up to 250 verified lead discovery scans/mo",
-        "1 Saved Ideal Customer Profile",
-        "Basic Data Enrichment pipeline",
-        "Email template generation",
-        "Manual CRM sync",
-        "Standard Chat Support"
-      ],
-      popular: false,
-      cta: "Get Started Free"
+      icon: <Search className="w-5 h-5 text-blue-600" />,
+      title: "Lead Discovery Agent",
+      description: "Automatically crawl localized registries, job postings, and company websites to find target accounts."
     },
     {
-      name: "Scale Pro",
-      price: "$149",
-      period: "user/month",
-      description: "Perfect for scaling business development teams seeking AI-driven outreach triggers.",
-      features: [
-        "Unlimited Lead Discovery scans",
-        "Up to 2,500 full enrichments /mo",
-        "Unlimited ICP Profiles & rules",
-        "Multi-Agent pipeline visualization",
-        "LinkedIn + Email automated variations",
-        "Advanced CRM auto-deduplication",
-        "Dedicated SDR Account Manager"
-      ],
-      popular: true,
-      cta: "Start Scale Trial"
+      icon: <Target className="w-5 h-5 text-blue-600" />,
+      title: "ICP Builder & Scoring",
+      description: "Define firmographics, location ranges, and required software stacks. Discovered companies are instantly graded (0-100)."
     },
     {
-      name: "Enterprise",
-      price: "Custom",
-      period: "tailored billing",
-      description: "For commercial organizations requiring deep CRM integrations and high velocity.",
-      features: [
-        "Unlimited verified leads & enrichments",
-        "Custom API & webhook triggers",
-        "Salesforce, Hubspot, and Zoho CRM native sync",
-        "Private dedicated LLM server keys",
-        "SLA security protocols & audits",
-        "Quarterly pipeline optimization consultations"
-      ],
-      popular: false,
-      cta: "Contact Enterprise Sales"
+      icon: <ShieldCheck className="w-5 h-5 text-blue-600" />,
+      title: "Automated Data Enrichment",
+      description: "Gather deep enterprise metadata, verified emails, decision-maker profiles, and active technology triggers."
+    },
+    {
+      icon: <Mail className="w-5 h-5 text-blue-600" />,
+      title: "Outreach Copywriter",
+      description: "Create highly personalized email templates and LinkedIn messages tailored to each prospect's background."
+    },
+    {
+      icon: <Database className="w-5 h-5 text-blue-600" />,
+      title: "Auto-Pilot CRM Integration",
+      description: "Native synchronization with Salesforce, HubSpot, and Attio. Detects and blocks duplicates automatically."
+    },
+    {
+      icon: <Users className="w-5 h-5 text-blue-600" />,
+      title: "Multi-Agent Coordination",
+      description: "Collaborative agents execute discovery, scoring, and writing in parallel, mimicking an entire SDR team."
     }
   ];
 
   return (
-    <div className="bg-slate-50 min-h-screen font-sans text-slate-800 relative overflow-hidden" id="landing-page-root">
+    <div className="bg-[#F8FAFC] min-h-screen font-sans text-[#0F172A] relative overflow-hidden" id="landing-page-root">
       <BackgroundMotionGraphics />
-      {/* Dynamic Header */}
-      <header className="sticky top-0 bg-white/90 backdrop-blur-md border-b border-slate-100 z-50 transition" id="landing-header">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between font-sans">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-slate-900 rounded-xl flex items-center justify-center text-white font-semibold text-base shadow-sm" id="landing-logo">
-              S⚡P
+
+      {/* Navigation Header */}
+      <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-[#E2E8F0] z-50 transition" id="landing-header">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 bg-[#0F172A] rounded-lg flex items-center justify-center text-white font-semibold text-sm shadow-sm" id="landing-logo">
+              SP
             </div>
-            <div>
-              <span className="font-semibold text-base tracking-tight text-slate-900">SalesPilot</span>
-              <span className="text-slate-800 font-semibold ml-1 text-[10px] bg-slate-100 border border-slate-205 px-1.5 py-0.5 rounded">AI</span>
+            <div className="flex items-center gap-1.5">
+              <span className="font-semibold text-base tracking-tight text-[#0F172A]">SalesPilot</span>
+              <span className="text-[#334155] font-bold text-[10px] bg-slate-100 border border-[#E2E8F0] px-1.5 py-0.5 rounded-md">AI</span>
             </div>
           </div>
           
-          <nav className="hidden md:flex items-center gap-8 text-xs font-medium text-slate-500">
-            <a href="#features" className="hover:text-slate-900 transition">Features</a>
-            <a href="#workflow" className="hover:text-slate-900 transition">How It Works</a>
-            <a href="#pricing" className="hover:text-slate-900 transition">Pricing</a>
-            <a href="#faq" className="hover:text-slate-900 transition">FAQ</a>
+          <nav className="hidden md:flex items-center gap-8 text-xs font-semibold text-[#64748B]">
+            <a href="#product" className="hover:text-[#0F172A] transition">Product</a>
+            <a href="#features" className="hover:text-[#0F172A] transition">Agents</a>
+            <a href="#pricing" className="hover:text-[#0F172A] transition">Pricing</a>
           </nav>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <button 
               onClick={onLogin} 
-              className="text-xs font-medium text-slate-600 hover:text-slate-950 transition px-3 py-2"
+              className="text-xs font-semibold text-[#334155] hover:text-[#0F172A] transition px-3 py-2"
               id="btn-login-header"
             >
               Sign In
             </button>
             <button 
               onClick={onStart}
-              className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium px-4 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+              className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5 cursor-pointer"
               id="btn-trial-header"
             >
               Free Workspace <ArrowRight className="w-3.5 h-3.5" />
@@ -134,333 +116,435 @@ export default function LandingPage({ onStart, onLogin }: LandingPageProps) {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-20 pb-16 md:pt-28 md:pb-24 border-b border-slate-100 bg-gradient-to-b from-white via-slate-50 to-white" id="hero-section">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 font-sans">
-          <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 bg-slate-100 border border-slate-200 px-3 py-1 rounded-full text-slate-700 text-xs font-medium mb-6 animate-fade-in" id="hero-badge">
-              <Zap className="w-3.5 h-3.5 text-amber-500" /> Autonomous B2B Prospecting Is Here
-            </div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-semibold text-slate-900 tracking-tight leading-tight mb-6" id="hero-heading">
-              AI-Powered Lead Discovery, <span className="text-slate-900 underline decoration-slate-200 decoration-wavy underline-offset-8">Qualification & Outreach</span>
-            </h1>
-            <p className="text-sm md:text-base text-slate-500 leading-relaxed mb-8 max-w-2xl mx-auto" id="hero-subtext">
-              Find, qualify, and engage your ideal customer profiles automatically. Deploy autonomous SDR agents to search the web, crawl contacts, and design outreach campaigns.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto" id="hero-ctas">
-              <button 
-                onClick={onStart}
-                className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-semibold px-8 py-3.5 rounded-xl shadow-sm hover:scale-[1.01] active:scale-[0.99] transition-all duration-150 flex items-center justify-center gap-2 text-xs cursor-pointer"
-                id="btn-hero-trial"
-              >
-                Start Free Trial <ArrowRight className="w-4 h-4" />
-              </button>
-              <button 
-                onClick={onStart}
-                className="w-full sm:w-auto bg-white border border-slate-205 hover:bg-slate-50 text-slate-700 font-semibold px-8 py-3.5 rounded-xl shadow-sm transition text-xs cursor-pointer"
-                id="btn-hero-demo"
-              >
-                Book Demo
-              </button>
-            </div>
+      {/* Hero Header Section */}
+      <section className="relative pt-16 pb-12 md:pt-24 md:pb-16" id="hero-section">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <div className="inline-flex items-center gap-1.5 bg-white border border-[#E2E8F0] px-3.5 py-1 rounded-full text-[#334155] text-xs font-medium mb-6 shadow-sm">
+            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+            Agentic Outbound Platform for Enterprise B2B SaaS
+          </div>
+          
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-[#0F172A] tracking-tight leading-tight mb-6 max-w-4xl mx-auto" id="hero-heading">
+            This platform helps sales teams discover, qualify, and engage prospects.
+          </h1>
+          
+          <p className="text-sm md:text-base text-[#64748B] leading-relaxed mb-8 max-w-2xl mx-auto" id="hero-subtext">
+            SalesPilot AI deploys autonomous SDR agents that search company networks, qualify leads based on your ICP rules, update your CRM, and generate highly targeted outreach copy.
+          </p>
 
-            <div className="mt-6 text-xs text-slate-400 flex items-center justify-center gap-4">
-              <span className="flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> No Credit Card Required</span>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto" id="hero-ctas">
+            <button 
+              onClick={onStart}
+              className="w-full sm:w-auto bg-[#0F172A] hover:bg-[#1e293b] text-white font-semibold px-6 py-3 rounded-lg shadow-sm transition flex items-center justify-center gap-2 text-xs cursor-pointer"
+              id="btn-hero-trial"
+            >
+              Get Started <ArrowRight className="w-4 h-4" />
+            </button>
+            <button 
+              onClick={onStart}
+              className="w-full sm:w-auto bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC] text-[#334155] font-semibold px-6 py-3 rounded-lg shadow-sm transition text-xs cursor-pointer"
+              id="btn-hero-demo"
+            >
+              Request Custom Demo
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Centerpiece Dashboard Preview */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 relative z-10" id="product">
+        <div className="border border-[#E2E8F0] rounded-xl bg-white shadow-xl overflow-hidden" id="hero-mockup">
+          
+          {/* Header Console Bar */}
+          <div className="bg-[#0F172A] text-white px-4 py-3.5 flex items-center justify-between border-b border-slate-800">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 bg-slate-700 rounded-full"></span>
+              <span className="w-2.5 h-2.5 bg-slate-700 rounded-full"></span>
+              <span className="w-2.5 h-2.5 bg-slate-700 rounded-full"></span>
+              <span className="ml-3 text-xs font-semibold text-slate-300 font-sans tracking-wide">
+                SalesPilot AI SDR Console &bull; <span className="text-[#2563EB]">Live Workspace</span>
+              </span>
+            </div>
+            <div className="flex items-center gap-2.5 text-[11px] text-slate-400">
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Connected</span>
               <span>•</span>
-              <span className="flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Instant Setup</span>
-              <span>•</span>
-              <span className="flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> 14-day Free Trial</span>
+              <span>CRM: Salesforce Connected</span>
             </div>
           </div>
 
-          {/* Interactive UI Mockup */}
-          <div className="mt-16 border border-slate-205 rounded-2xl bg-white shadow-sm p-4 md:p-6 max-w-5xl mx-auto overflow-hidden animate-fade-in-up" id="hero-mockup">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 bg-rose-400 rounded-full"></span>
-                <span className="w-2.5 h-2.5 bg-amber-400 rounded-full"></span>
-                <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full"></span>
-                <span className="ml-2 text-[10px] font-mono text-slate-400 bg-slate-50 border border-slate-150 px-2 py-0.5 rounded">Agent System Console</span>
+          {/* Quick Metrics Bar */}
+          <div className="grid grid-cols-2 md:grid-cols-6 border-b border-[#E2E8F0] bg-slate-50 divide-x divide-[#E2E8F0]">
+            <div className="p-4">
+              <span className="text-[10px] uppercase font-bold text-[#64748B] tracking-wider block">Total Leads</span>
+              <span className="text-lg font-semibold text-[#0F172A] mt-1 block">1,420</span>
+            </div>
+            <div className="p-4">
+              <span className="text-[10px] uppercase font-bold text-[#64748B] tracking-wider block">ICP Qualified</span>
+              <span className="text-lg font-semibold text-emerald-600 mt-1 block">865</span>
+            </div>
+            <div className="p-4">
+              <span className="text-[10px] uppercase font-bold text-[#64748B] tracking-wider block">Outreach Sent</span>
+              <span className="text-lg font-semibold text-[#0F172A] mt-1 block">4,210</span>
+            </div>
+            <div className="p-4">
+              <span className="text-[10px] uppercase font-bold text-[#64748B] tracking-wider block">Active Campaigns</span>
+              <span className="text-lg font-semibold text-[#2563EB] mt-1 block">8</span>
+            </div>
+            <div className="p-4">
+              <span className="text-[10px] uppercase font-bold text-[#64748B] tracking-wider block">Conv. Rate</span>
+              <span className="text-lg font-semibold text-[#0F172A] mt-1 block">18.2%</span>
+            </div>
+            <div className="p-4">
+              <span className="text-[10px] uppercase font-bold text-[#64748B] tracking-wider block">CRM Sync Rate</span>
+              <span className="text-lg font-semibold text-emerald-600 mt-1 block">100%</span>
+            </div>
+          </div>
+
+          {/* Interactive Workspace Area */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 min-h-[500px]">
+            
+            {/* Left sidebar: ICP Builder Configuration */}
+            <div className="border-r border-[#E2E8F0] p-5 bg-slate-50/50 space-y-6">
+              <div>
+                <span className="text-[10px] uppercase font-bold text-[#64748B] tracking-wider block mb-2">Ideal Customer Profile</span>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => setSelectedIcp("germany")}
+                    className={`flex-1 text-[11px] py-1.5 font-semibold rounded-md border transition text-center ${selectedIcp === "germany" ? "bg-white border-[#E2E8F0] text-[#0F172A] shadow-sm font-bold" : "border-transparent text-[#64748B] hover:text-[#0F172A]"}`}
+                  >
+                    Germany ICP
+                  </button>
+                  <button 
+                    onClick={() => setSelectedIcp("us")}
+                    className={`flex-1 text-[11px] py-1.5 font-semibold rounded-md border transition text-center ${selectedIcp === "us" ? "bg-white border-[#E2E8F0] text-[#0F172A] shadow-sm font-bold" : "border-transparent text-[#64748B] hover:text-[#0F172A]"}`}
+                  >
+                    US Mid-Market ICP
+                  </button>
+                </div>
               </div>
-              <div className="bg-slate-100 text-[10px] uppercase tracking-wider font-semibold text-slate-500 px-2 py-0.5 rounded">
-                Active Session
+
+              <div className="space-y-3">
+                <span className="text-[10px] uppercase font-bold text-[#64748B] tracking-wider block">Targeting Rules</span>
+                
+                <div className="bg-white p-3 rounded-lg border border-[#E2E8F0] space-y-2 text-xs">
+                  <div>
+                    <label className="text-[10px] text-[#64748B] block">Industries</label>
+                    <span className="font-medium text-[#0F172A] block mt-0.5">Manufacturing, Heavy Industrial</span>
+                  </div>
+                  <div className="border-t border-slate-100 pt-2">
+                    <label className="text-[10px] text-[#64748B] block">Location Scope</label>
+                    <span className="font-medium text-[#0F172A] block mt-0.5">{selectedIcp === "germany" ? "Germany (DACH)" : "United States"}</span>
+                  </div>
+                  <div className="border-t border-slate-100 pt-2">
+                    <label className="text-[10px] text-[#64748B] block">Employee Range</label>
+                    <span className="font-medium text-[#0F172A] block mt-0.5">200 - 500 Employees</span>
+                  </div>
+                  <div className="border-t border-slate-100 pt-2">
+                    <label className="text-[10px] text-[#64748B] block">Revenue Threshold</label>
+                    <span className="font-medium text-[#0F172A] block mt-0.5">&gt; $10M ARR</span>
+                  </div>
+                  <div className="border-t border-slate-100 pt-2">
+                    <label className="text-[10px] text-[#64748B] block">Tech Stack Filter</label>
+                    <span className="font-medium text-[#0F172A] block mt-0.5">AWS, SAP ERP / Salesforce</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-slate-100 p-3.5 rounded-lg border border-[#E2E8F0] text-center">
+                <div className="text-xs font-semibold text-[#0F172A] mb-1">CRM Auto-Sync</div>
+                <p className="text-[10px] text-[#64748B] leading-relaxed mb-3">Qualified contacts are saved directly into pipelines.</p>
+                <button 
+                  onClick={handleTriggerSync}
+                  className={`w-full py-1.5 rounded-md text-[10px] font-semibold border bg-white border-[#E2E8F0] transition flex items-center justify-center gap-1.5 ${isSyncing ? "text-blue-600 bg-blue-50" : "text-[#334155] hover:bg-slate-50"}`}
+                >
+                  <RefreshCw className={`w-3 h-3 ${isSyncing ? "animate-spin" : ""}`} />
+                  {syncStatus}
+                </button>
               </div>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-                <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-1">Step 1: Define Rules</span>
-                <p className="text-xs font-semibold text-slate-800">Ideal Customer Profile</p>
-                <div className="mt-3 space-y-1.5 text-xs text-slate-500 font-mono">
-                  <div>Industry: <strong className="text-slate-705 font-medium">Manufacturing</strong></div>
-                  <div>Country: <strong className="text-slate-705 font-medium">Germany</strong></div>
-                  <div>Employees: <strong className="text-slate-705 font-medium">200-500</strong></div>
-                  <div>Tech: <strong className="text-slate-705 font-medium">SAP ERP</strong></div>
+
+            {/* Middle: Discovered Qualified Lead spreadsheet list */}
+            <div className="lg:col-span-2 p-5 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="font-semibold text-sm text-[#0F172A]">Discovered Prospects</h3>
+                    <p className="text-[11px] text-[#64748B]">Autonomous agents continuously scan, enrich, and qualify leads.</p>
+                  </div>
+                  <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded border border-emerald-100 flex items-center gap-1">
+                    <Check className="w-3 h-3" /> Auto-Enriched
+                  </span>
+                </div>
+
+                <div className="overflow-x-auto border border-[#E2E8F0] rounded-lg bg-[#F8FAFC]">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="bg-white border-b border-[#E2E8F0] text-[9px] font-bold text-[#64748B] uppercase tracking-wider">
+                        <th className="p-3">Company Details</th>
+                        <th className="p-3">Firmographics</th>
+                        <th className="p-3 text-center">Score</th>
+                        <th className="p-3 text-right">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#E2E8F0]">
+                      {currentLeads.map((lead, idx) => (
+                        <tr key={idx} className="hover:bg-white transition-all">
+                          <td className="p-3">
+                            <span className="font-semibold text-[#0F172A] block">{lead.name}</span>
+                            <span className="text-[10px] text-[#64748B] block font-mono">{lead.stack}</span>
+                          </td>
+                          <td className="p-3 text-[#334155]">
+                            <span className="block">{lead.employees} employees</span>
+                            <span className="text-[10px] text-[#64748B] block">{lead.revenue} revenue</span>
+                          </td>
+                          <td className="p-3 text-center">
+                            <span className="inline-block px-1.5 py-0.5 rounded bg-blue-50 border border-blue-100 text-blue-700 font-bold text-[10px]">
+                              {lead.score}
+                            </span>
+                          </td>
+                          <td className="p-3 text-right">
+                            <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
+                              {lead.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
-              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-                <span className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider block mb-1">Step 2: Autonomous crawling</span>
-                <p className="text-xs font-semibold text-slate-800">Agent Pipelines</p>
-                <div className="mt-3 space-y-1.5 text-xs text-slate-500">
-                  <div className="flex items-center justify-between font-mono text-[11px]">
-                    <span>🔍 Crawler Agent</span>
-                    <span className="text-emerald-600 font-semibold">100% Ok</span>
+
+              {/* Bottom: Simulated workflow outcomes showcase */}
+              <div className="mt-5 border-t border-[#E2E8F0] pt-4 grid grid-cols-3 gap-4 text-center">
+                <div className="p-2.5 bg-slate-50 rounded-lg border border-[#E2E8F0]">
+                  <div className="text-xs font-semibold text-[#0F172A]">CRM Duplication Lock</div>
+                  <span className="text-[10px] text-emerald-600 font-semibold block mt-0.5">Active</span>
+                </div>
+                <div className="p-2.5 bg-slate-50 rounded-lg border border-[#E2E8F0]">
+                  <div className="text-xs font-semibold text-[#0F172A]">Tech-Stack Verification</div>
+                  <span className="text-[10px] text-emerald-600 font-semibold block mt-0.5">Verified</span>
+                </div>
+                <div className="p-2.5 bg-slate-50 rounded-lg border border-[#E2E8F0]">
+                  <div className="text-xs font-semibold text-[#0F172A]">Outreach Ready</div>
+                  <span className="text-[10px] text-[#2563EB] font-semibold block mt-0.5">Generated</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right sidebar: Live multi-agent coordinator logger */}
+            <div className="border-l border-[#E2E8F0] p-5 bg-slate-50/50 flex flex-col justify-between">
+              <div>
+                <span className="text-[10px] uppercase font-bold text-[#64748B] tracking-wider block mb-3">Agent Coordinator Logs</span>
+                
+                <div className="space-y-3 font-mono text-[9px] text-[#334155] leading-relaxed">
+                  <div className="flex gap-2">
+                    <span className="text-[#64748B]">[14:02:10]</span>
+                    <p><strong className="text-blue-700 font-semibold">crawler:</strong> Scanned 43 candidate domains in Germany</p>
                   </div>
-                  <div className="flex items-center justify-between font-mono text-[11px]">
-                    <span>⚡ Enrichment Agent</span>
-                    <span className="text-emerald-600 font-semibold">100% Ok</span>
+                  <div className="flex gap-2">
+                    <span className="text-[#64748B]">[14:02:15]</span>
+                    <p><strong className="text-blue-700 font-semibold">crawler:</strong> Extracted Schulz Maschinenbau GmbH</p>
                   </div>
-                  <div className="flex items-center justify-between font-mono text-[11px]">
-                    <span>🧠 Scoring Engine</span>
-                    <span className="text-slate-800 font-semibold bg-white border border-slate-200 px-1 py-0.5 rounded">Score: 95</span>
+                  <div className="flex gap-2">
+                    <span className="text-[#64748B]">[14:02:18]</span>
+                    <p><strong className="text-blue-700 font-semibold">enricher:</strong> Found tech-stack matching criteria (SAP ERP, AWS)</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="text-[#64748B]">[14:02:22]</span>
+                    <p><strong className="text-blue-700 font-semibold">score-eng:</strong> Match verified at 92% (excellent match)</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="text-[#64748B]">[14:02:25]</span>
+                    <p><strong className="text-purple-700 font-semibold">writer:</strong> Generated cold email templates & outreach sequences</p>
+                  </div>
+                  <div className="flex gap-2 border-t border-slate-200/80 pt-2">
+                    <span className="text-[#64748B]">[14:02:27]</span>
+                    <p><strong className="text-emerald-700 font-semibold">crm-sync:</strong> Exported Schulz, Steinbach to HubSpot pipeline</p>
                   </div>
                 </div>
               </div>
-              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-                <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-1">Step 3: Multi-channel reachout</span>
-                <p className="text-xs font-semibold text-slate-800">Personalized Copilot</p>
-                <div className="mt-3 bg-white p-2.5 rounded border border-slate-250 text-[11px] font-mono text-slate-505 line-clamp-3">
-                  Subject: Optimizing ERP Sync at Schulz Maschinenbau... Hi Dieter, noticed you are driving automated tool improvements...
+
+              <div className="bg-slate-900 border border-slate-800 text-white p-3.5 rounded-lg mt-5 space-y-1.5">
+                <div className="text-[10px] text-emerald-400 font-mono font-semibold flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span>
+                  Active Outreach Sequence
+                </div>
+                <div className="text-[9px] text-slate-300 font-mono italic leading-relaxed line-clamp-4">
+                  "Hi Dieter, I noticed Schulz Maschinenbau is scaling production in Saxony while managing tool integrations. Our team helps manufacturers automate data syncs..."
                 </div>
               </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* Value & Outcomes Section */}
+      <section className="py-16 bg-white border-t border-[#E2E8F0]" id="value">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <h2 className="text-xs font-semibold text-[#64748B] uppercase tracking-wider mb-2">Designed for B2B Revenue Teams</h2>
+            <p className="text-2xl sm:text-3xl font-semibold text-[#0F172A] tracking-tight">Focus on Closed Deals, Not Data Entry</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="p-6 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC]">
+              <h3 className="font-semibold text-sm text-[#0F172A] mb-2">Workflow Automation</h3>
+              <p className="text-xs text-[#64748B] leading-relaxed">
+                Skip searching databases manually. Simply define your Ideal Customer Profile rules, and let our agents run automated background workflows to gather details.
+              </p>
+            </div>
+            <div className="p-6 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC]">
+              <h3 className="font-semibold text-sm text-[#0F172A] mb-2">Precision Qualification</h3>
+              <p className="text-xs text-[#64748B] leading-relaxed">
+                Avoid wasting time on unqualified accounts. Our Lead Qualification Engine ranks every candidate from 0 to 100 based on your strict employee, geography, and stack requirements.
+              </p>
+            </div>
+            <div className="p-6 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC]">
+              <h3 className="font-semibold text-sm text-[#0F172A] mb-2">Personalized Engagement</h3>
+              <p className="text-xs text-[#64748B] leading-relaxed">
+                Generate tailored message sequences automatically. SalesPilot AI reviews prospect background information and technology signals to craft relevant outreach.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features bento grid */}
-      <section className="py-20 bg-white" id="features">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 font-sans">
+      {/* Agent Feature Grid */}
+      <section className="py-20 bg-[#F8FAFC] border-t border-[#E2E8F0]" id="features">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Core Features</h2>
-            <p className="text-3xl font-semibold text-slate-900 tracking-tight">
-              An SDR System That Never Sleeps
+            <h2 className="text-xs font-semibold text-[#64748B] uppercase tracking-wider mb-2">Modular AI Agent Infrastructure</h2>
+            <p className="text-2xl sm:text-3xl font-semibold text-[#0F172A] tracking-tight">
+              An Autonomous SDR Stack
             </p>
-            <p className="text-slate-400 text-xs mt-3 leading-relaxed">
-              SalesPilot AI merges multiple domain-specific agents to build a high-performance outbound mechanism, freeing up human representatives to focus purely on active consultations.
+            <p className="text-[#64748B] text-xs mt-3 leading-relaxed max-w-xl mx-auto">
+              SalesPilot AI replaces fragile scripts and manual searches with specialized SDR agents cooperating to construct qualified outbound pipelines.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="features-bento">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="features-grid">
             {features.map((feature, idx) => (
               <div 
                 key={idx} 
-                className="bg-slate-50 hover:bg-white rounded-2xl p-6 border border-slate-200 hover:border-slate-300 shadow-sm transition-all duration-205 group"
+                className="bg-white rounded-xl p-6 border border-[#E2E8F0] shadow-sm hover:border-slate-350 transition-all duration-200"
               >
-                <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:scale-105 transition-all duration-300 mb-5">
+                <div className="w-10 h-10 rounded-lg bg-slate-50 border border-[#E2E8F0] flex items-center justify-center mb-5">
                   {feature.icon}
                 </div>
-                <h3 className="font-semibold text-sm text-slate-900 group-hover:text-amber-500 transition mb-2">{feature.title}</h3>
-                <p className="text-slate-400 text-xs leading-relaxed">{feature.description}</p>
+                <h3 className="font-semibold text-sm text-[#0F172A] mb-2">{feature.title}</h3>
+                <p className="text-[#64748B] text-xs leading-relaxed">{feature.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* How It Works Diagram Section */}
-      <section className="py-20 bg-slate-50 border-t border-b border-slate-100" id="workflow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 font-sans">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Integrated Multi-Agent Operations</h2>
-            <p className="text-3xl font-semibold text-slate-900 leading-tight">The SalesPilot AI Assembly Pipeline</p>
-            <p className="text-xs text-slate-400 mt-2">Watch your lead discovery workflow run seamlessly across 6 discrete artificial intelligences.</p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-6 gap-4 relative" id="workflow-flow">
-            {/* Step 1 */}
-            <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm relative text-center">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-slate-900 text-white rounded-full flex items-center justify-center font-semibold text-xs">1</div>
-              <div className="font-semibold text-slate-800 text-xs mt-2">1. User Query</div>
-              <p className="text-[10px] text-slate-400 mt-1">Specify parameters e.g., German Automation</p>
-            </div>
-            {/* Step 2 */}
-            <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm relative text-center">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-slate-900 text-white rounded-full flex items-center justify-center font-semibold text-xs">2</div>
-              <div className="font-semibold text-slate-800 text-xs mt-2">2. Discovery Agent</div>
-              <p className="text-[10px] text-slate-400 mt-1">Searches company catalogs & crawls indexes</p>
-            </div>
-            {/* Step 3 */}
-            <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm relative text-center">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-slate-900 text-white rounded-full flex items-center justify-center font-semibold text-xs">3</div>
-              <div className="font-semibold text-slate-800 text-xs mt-2">3. Enrichment Agent</div>
-              <p className="text-[10px] text-slate-400 mt-1">Gathers stacks, websites & stakeholders</p>
-            </div>
-            {/* Step 4 */}
-            <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm relative text-center">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-slate-900 text-white rounded-full flex items-center justify-center font-semibold text-xs">4</div>
-              <div className="font-semibold text-slate-800 text-xs mt-2">4. Grading Agent</div>
-              <p className="text-[10px] text-slate-400 mt-1">Grades company against defined ICP rules</p>
-            </div>
-            {/* Step 5 */}
-            <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm relative text-center">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-slate-900 text-white rounded-full flex items-center justify-center font-semibold text-xs">5</div>
-              <div className="font-semibold text-slate-800 text-xs mt-2">5. CRM Sync Agent</div>
-              <p className="text-[10px] text-slate-400 mt-1">Saves records & blocks duplications</p>
-            </div>
-            {/* Step 6 */}
-            <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm relative text-center">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-slate-900 text-white rounded-full flex items-center justify-center font-semibold text-xs">6</div>
-              <div className="font-semibold text-slate-800 text-xs mt-2">6. Outreach Agent</div>
-              <p className="text-[10px] text-slate-400 mt-1">Drafts personalized follow-ups</p>
-            </div>
+      {/* Enterprise CRM Trust Section */}
+      <section className="py-16 bg-white border-t border-b border-[#E2E8F0]" id="integrations">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h3 className="text-xs font-semibold text-[#64748B] uppercase tracking-wider mb-6">Integrate with Your Existing Stack</h3>
+          <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 opacity-60 grayscale hover:grayscale-0 transition">
+            <span className="text-[#0F172A] font-bold text-sm font-sans tracking-wide">SALESFORCE NATIVE</span>
+            <span className="text-[#0F172A] font-bold text-sm font-sans tracking-wide">HUBSPOT CRM</span>
+            <span className="text-[#0F172A] font-bold text-sm font-sans tracking-wide">ATTIO CRM</span>
+            <span className="text-[#0F172A] font-bold text-sm font-sans tracking-wide">ZOHO ENTERPRISE</span>
           </div>
         </div>
       </section>
 
       {/* Pricing Plans */}
-      <section className="py-20 bg-white" id="pricing font-sans">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 font-sans">
+      <section className="py-20 bg-[#F8FAFC]" id="pricing">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pricing</h2>
-            <p className="text-3xl font-semibold text-slate-900 tracking-tight">Accelerate Growth With Flexible Options</p>
-            <p className="text-slate-400 mt-3 text-xs leading-relaxed">Every tier includes our basic AI capabilities. Upgrade as your prospect pipelines expand.</p>
+            <h2 className="text-xs font-semibold text-[#64748B] uppercase tracking-wider mb-2">Transparent Subscriptions</h2>
+            <p className="text-2xl sm:text-3xl font-semibold text-[#0F172A] tracking-tight">Flexible Plans for B2B Teams</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch font-sans" id="pricing-wrapper">
-            {pricingPlans.map((plan, idx) => (
-              <div 
-                key={idx} 
-                className={`bg-white rounded-2xl p-8 border hover:shadow-md transition-all duration-200 flex flex-col justify-between relative ${plan.popular ? "border-slate-900 shadow-sm ring-1 ring-slate-900" : "border-slate-200"}`}
-              >
-                {plan.popular && (
-                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 bg-slate-900 text-white text-[9px] uppercase tracking-wider font-semibold rounded shadow-sm">
-                    Most Popular
-                  </span>
-                )}
-                <div>
-                  <h3 className="text-slate-900 text-lg font-semibold mb-2">{plan.name}</h3>
-                  <p className="text-slate-405 text-xs leading-relaxed mb-6 font-sans">{plan.description}</p>
-                  
-                  <div className="flex items-baseline gap-1 mb-8">
-                    <span className="text-3xl font-semibold text-slate-900">{plan.price}</span>
-                    <span className="text-xs font-semibold text-slate-400 font-mono">/{plan.period}</span>
-                  </div>
-
-                  <div className="border-t border-slate-100 pt-6 mb-8 font-sans">
-                    <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-4 font-sans">Included capabilities:</p>
-                    <ul className="space-y-3.5 text-xs text-slate-600 font-sans">
-                      {plan.features.map((feature, fIdx) => (
-                        <li key={fIdx} className="flex items-center gap-2.5">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" /> {feature}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch" id="pricing-wrapper">
+            {/* Starter Plan */}
+            <div className="bg-white rounded-xl p-8 border border-[#E2E8F0] flex flex-col justify-between">
+              <div>
+                <h3 className="text-[#0F172A] text-base font-semibold mb-2">Starter Workspace</h3>
+                <p className="text-[#64748B] text-xs leading-relaxed mb-6">For single founders and sales representatives wanting to automate research tasks.</p>
+                <div className="flex items-baseline gap-1 mb-6">
+                  <span className="text-2xl font-semibold text-[#0F172A]">$49</span>
+                  <span className="text-xs font-semibold text-[#64748B]">/user/month</span>
                 </div>
-
-                <button 
-                  onClick={onStart}
-                  className={`w-full font-semibold text-xs text-center py-2.5 px-4 rounded-lg transition cursor-pointer ${plan.popular ? "bg-slate-900 text-white hover:bg-slate-800 shadow-sm mb-1" : "bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200"}`}
-                >
-                  {plan.cta}
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-20 bg-slate-50 border-t border-b border-slate-100" id="testimonials">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 font-sans">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">High Praise</h2>
-            <p className="text-2xl font-semibold text-slate-900 tracking-tight">What Sales Leaders Say</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-sans">
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-              <div className="flex items-center gap-1 text-amber-500 text-xs mb-3">★★★★★</div>
-              <p className="text-xs text-slate-500 leading-relaxed italic mb-4 font-sans">
-                "SalesPilot AI has completely cut down our manual prospecting overheads. We found 4 new manufacturing accounts in Saxony in our first week using their automated enrichment, yielding $85k in pipeline."
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-slate-100 border border-slate-200 rounded-full flex items-center justify-center font-semibold text-xs text-slate-800">
-                  MR
-                </div>
-                <div>
-                  <h4 className="font-semibold text-xs text-slate-900">Matthias Reitner</h4>
-                  <p className="text-[10px] text-slate-400 font-mono">Head of Growth, AeroSpace Partsmill</p>
+                <div className="border-t border-[#E2E8F0] pt-6 mb-8">
+                  <ul className="space-y-3 text-xs text-[#334155]">
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" /> Up to 250 enrichment queries/mo</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" /> 1 Saved Ideal Customer Profile</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" /> Outreach copywriter module</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" /> Manual CSV data exports</li>
+                  </ul>
                 </div>
               </div>
+              <button onClick={onStart} className="w-full font-semibold text-xs text-center py-2.5 px-4 rounded-lg bg-slate-50 text-[#0F172A] hover:bg-slate-100 border border-[#E2E8F0] transition">
+                Start 14-Day Free Trial
+              </button>
             </div>
 
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-              <div className="flex items-center gap-1 text-amber-500 text-xs mb-3">★★★★★</div>
-              <p className="text-xs text-slate-500 leading-relaxed italic mb-4 font-sans">
-                "The email copy and LinkedIn connect statements generated by the Multi-Agent outreach engine are insanely natural. Our cold reply rate spiked from 4.2% to 18.5% almost instantly!"
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-slate-100 border border-slate-200 rounded-full flex items-center justify-center font-semibold text-xs text-slate-800">
-                  LC
+            {/* Growth Pro Plan */}
+            <div className="bg-white rounded-xl p-8 border border-[#0F172A] shadow-md flex flex-col justify-between relative ring-1 ring-[#0F172A]">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-[#0F172A] text-white text-[9px] uppercase tracking-wider font-semibold rounded-full shadow-sm">
+                Most Popular
+              </span>
+              <div>
+                <h3 className="text-[#0F172A] text-base font-semibold mb-2">Growth Teams</h3>
+                <p className="text-[#64748B] text-xs leading-relaxed mb-6">For expanding teams seeking automated CRM integrations and constant enrichment schedules.</p>
+                <div className="flex items-baseline gap-1 mb-6">
+                  <span className="text-2xl font-semibold text-[#0F172A]">$149</span>
+                  <span className="text-xs font-semibold text-[#64748B]">/user/month</span>
                 </div>
-                <div>
-                  <h4 className="font-semibold text-xs text-slate-900">Laura Chen</h4>
-                  <p className="text-[10px] text-slate-400 font-mono">Founder, Saasify Studio Inc</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-              <div className="flex items-center gap-1 text-amber-500 text-xs mb-3">★★★★★</div>
-              <p className="text-xs text-slate-500 leading-relaxed italic mb-4 font-sans">
-                "Integrating CRM without duplicates simplifies everything. The agent checks if the target domain website exists before saving, protecting our databases from trash data."
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-slate-100 border border-slate-200 rounded-full flex items-center justify-center font-semibold text-xs text-slate-800">
-                  DK
-                </div>
-                <div>
-                  <h4 className="font-semibold text-xs text-slate-900">Darrel K.</h4>
-                  <p className="text-[10px] text-slate-400 font-mono">VP Marketing, Summit Supply Chain</p>
+                <div className="border-t border-[#E2E8F0] pt-6 mb-8">
+                  <ul className="space-y-3 text-xs text-[#334155]">
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" /> Up to 2,500 enrichment queries/mo</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" /> Unlimited saved ICP rules</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" /> HubSpot & Salesforce native sync</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" /> Automated sequence drafting</li>
+                  </ul>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Frequently Asked Questions */}
-      <section className="py-20 bg-white" id="faq">
-        <div className="max-w-4xl mx-auto px-4 font-sans">
-          <div className="text-center mb-16">
-            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">FAQ</h2>
-            <p className="text-3xl font-semibold text-slate-900 tracking-tight">Have Questions? We Have Answers.</p>
-          </div>
-
-          <div className="space-y-6">
-            <div className="p-5 bg-slate-50 rounded-xl border border-slate-200">
-              <h3 className="font-semibold text-slate-800 text-xs flex items-center gap-2"><HelpCircle className="w-4 h-4 text-slate-400" /> How does the Agentic lead model find candidates?</h3>
-              <p className="text-xs text-slate-500 mt-2.5 leading-relaxed font-sans">
-                Our Discovery Agent reads your criteria (like employee limits, location, and key sectors) and employs sophisticated Google Gemini heuristics to simulate database crawlers, extracting high-fidelity metadata.
-              </p>
+              <button onClick={onStart} className="w-full font-semibold text-xs text-center py-2.5 px-4 rounded-lg bg-[#2563EB] text-white hover:bg-[#1D4ED8] shadow-sm transition">
+                Start Growth Workspace
+              </button>
             </div>
 
-            <div className="p-5 bg-slate-50 rounded-xl border border-slate-200">
-              <h3 className="font-semibold text-slate-800 text-xs flex items-center gap-2"><HelpCircle className="w-4 h-4 text-slate-400" /> Can I connect my native CRM?</h3>
-              <p className="text-xs text-slate-500 mt-2.5 leading-relaxed font-sans">
-                Yes! We maintain clean architecture layouts pre-configured for HubSpot, Salesforce, Zoho CRM, Slack, and Outreach, allowing simple integrations.
-              </p>
-            </div>
-
-            <div className="p-5 bg-slate-50 rounded-xl border border-slate-200">
-              <h3 className="font-semibold text-slate-800 text-xs flex items-center gap-2"><HelpCircle className="w-4 h-4 text-slate-400" /> What counts as a qualified lead?</h3>
-              <p className="text-xs text-slate-500 mt-2.5 leading-relaxed font-sans">
-                Our Lead Qualification Agent analyzes discovered leads against parameters like matching technology stack, firm revenue thresholds, and geographic availability, outputting scores from 0 to 100.
-              </p>
+            {/* Enterprise Plan */}
+            <div className="bg-white rounded-xl p-8 border border-[#E2E8F0] flex flex-col justify-between">
+              <div>
+                <h3 className="text-[#0F172A] text-base font-semibold mb-2">Enterprise Plan</h3>
+                <p className="text-[#64748B] text-xs leading-relaxed mb-6">For global sales organizations demanding custom APIs, security audits, and dedicated servers.</p>
+                <div className="flex items-baseline gap-1 mb-6">
+                  <span className="text-2xl font-semibold text-[#0F172A]">Custom</span>
+                  <span className="text-xs font-semibold text-[#64748B]">/tailored billing</span>
+                </div>
+                <div className="border-t border-[#E2E8F0] pt-6 mb-8">
+                  <ul className="space-y-3 text-xs text-[#334155]">
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" /> Unlimited enrichments & crawler scans</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" /> Dedicated database & hosting options</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" /> SLAs & custom API integrations</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" /> Dedicated SDR account coordinator</li>
+                  </ul>
+                </div>
+              </div>
+              <button onClick={onStart} className="w-full font-semibold text-xs text-center py-2.5 px-4 rounded-lg bg-slate-50 text-[#0F172A] hover:bg-slate-100 border border-[#E2E8F0] transition">
+                Contact Enterprise Sales
+              </button>
             </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-slate-950 text-slate-400 py-12 border-t border-slate-900 font-sans" id="landing-footer">
+      <footer className="bg-[#0F172A] text-slate-400 py-12 border-t border-slate-900" id="landing-footer">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-slate-900 font-semibold text-xs">
-                S⚡P
+              <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center text-slate-900 font-semibold text-xs">
+                SP
               </div>
               <span className="font-semibold text-sm text-white tracking-tight">SalesPilot AI</span>
             </div>
@@ -471,30 +555,30 @@ export default function LandingPage({ onStart, onLogin }: LandingPageProps) {
           <div>
             <h4 className="text-white font-semibold text-xs uppercase tracking-wider mb-3">Platform</h4>
             <ul className="space-y-2 text-xs">
-              <li><a href="#features" className="hover:text-white transition">Features</a></li>
-              <li><a href="#pricing font-sans" className="hover:text-white transition">Pricing Plans</a></li>
-              <li><span className="opacity-50">API Reference (Coming)</span></li>
+              <li><a href="#product" className="hover:text-white transition">Product Console</a></li>
+              <li><a href="#features" className="hover:text-white transition">Autonomous Agents</a></li>
+              <li><a href="#pricing" className="hover:text-white transition">Pricing Plans</a></li>
             </ul>
           </div>
           <div>
             <h4 className="text-white font-semibold text-xs uppercase tracking-wider mb-3">Integrations</h4>
             <ul className="space-y-2 text-xs">
-              <li><span className="opacity-50">HubSpot ERP</span></li>
-              <li><span className="opacity-50">Salesforce Suite</span></li>
-              <li><span className="opacity-50">Outlook Mail Sync</span></li>
+              <li><span className="opacity-50">Salesforce native CRM</span></li>
+              <li><span className="opacity-50">HubSpot database sync</span></li>
+              <li><span className="opacity-50">Attio API setup</span></li>
             </ul>
           </div>
           <div>
             <h4 className="text-white font-semibold text-xs uppercase tracking-wider mb-3">Legal</h4>
             <ul className="space-y-2 text-xs">
-              <li><span className="opacity-50">Privacy Policy</span></li>
-              <li><span className="opacity-50">Terms of Service</span></li>
-              <li><span className="opacity-50">GDPR Compliance</span></li>
+              <li><span className="opacity-50">Privacy & data security</span></li>
+              <li><span className="opacity-50">Terms of platform service</span></li>
+              <li><span className="opacity-50">GDPR compliance records</span></li>
             </ul>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-slate-900 text-center text-xs text-slate-500 font-sans">
-          © 2026 SalesPilot AI. All rights reserved. Crafted with premium design layouts & powered by Google Gemini models.
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-slate-900 text-center text-xs text-slate-500">
+          © 2026 SalesPilot AI. All rights reserved. Built with B2B SaaS best practices.
         </div>
       </footer>
     </div>
