@@ -62,12 +62,12 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl border border-slate-200 shadow-md relative z-10" id="auth-box">
         {/* Logo and Headings */}
         <div className="text-center">
-          <div 
-            className="mx-auto w-10 h-10 bg-slate-900 border border-slate-800 rounded-lg flex items-center justify-center text-white font-semibold text-xs shadow-sm cursor-pointer hover:bg-slate-800 transition duration-200" 
-            onClick={onBack}
-          >
-            S⚡P
-          </div>
+          <img 
+            src="/logo.png" 
+            alt="SalesPilot AI Logo" 
+            className="mx-auto w-10 h-10 rounded-lg shadow-sm cursor-pointer hover:opacity-80 transition duration-200" 
+            onClick={onBack} 
+          />
           <h2 className="mt-4 text-xl font-semibold text-slate-900 tracking-tight">
             {view === "login" && "Welcome to SalesPilot AI"}
             {view === "register" && "Create your SDK Workspace"}

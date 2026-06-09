@@ -18,7 +18,12 @@ import PlatformSettings from "./components/PlatformSettings";
 export default function App() {
   const [currentPage, setCurrentPage] = useState<
     "landing" | "auth" | "dashboard" | "icp" | "discovery" | "crm" | "outreach" | "campaigns" | "settings"
-  >("landing");
+  >(() => {
+    // Restore last page from session so a refresh doesn't reset to landing
+    const saved = sessionStorage.getItem("sp_page");
+    if (saved && saved !== "auth") return saved as any;
+    return "landing";
+  });
 
   // User session state
   const [user, setUser] = useState<{
@@ -90,6 +95,18 @@ export default function App() {
     }
   };
 
+  // Persist current page across refreshes
+  useEffect(() => {
+    sessionStorage.setItem("sp_page", currentPage);
+  }, [currentPage]);
+
+  // If user is already set (pre-seeded or restored) skip landing/auth
+  useEffect(() => {
+    if (user && (currentPage === "landing" || currentPage === "auth")) {
+      setCurrentPage("dashboard");
+    }
+  }, [user, currentPage]);
+
   // Nav helper for components to route sidebar pages
   const handleNavigate = (page: string) => {
     setCurrentPage(page as any);
@@ -142,9 +159,7 @@ export default function App() {
         <div className="space-y-6 pt-6">
           {/* Logo brand and name */}
           <div className="px-6 flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center text-white font-bold text-sm shadow-sm">
-              SP
-            </div>
+            <img src="/logo.png" alt="SalesPilot AI Logo" className="w-8 h-8 rounded-lg shadow-sm" />
             <div className="flex items-center gap-1.5">
               <span className="font-semibold text-base text-slate-900 tracking-tight">SalesPilot</span>
               <span className="text-slate-800 font-bold text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-md border border-slate-200">AI</span>

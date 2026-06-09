@@ -82,9 +82,7 @@ export default function LandingPage({ onStart, onLogin }: LandingPageProps) {
       <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-[#E2E8F0] z-50 transition" id="landing-header">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-[#0F172A] rounded-lg flex items-center justify-center text-white font-semibold text-sm shadow-sm" id="landing-logo">
-              SP
-            </div>
+            <img src="/logo.png" alt="SalesPilot AI Logo" className="w-8 h-8 rounded-lg shadow-sm" id="landing-logo" />
             <div className="flex items-center gap-1.5">
               <span className="font-semibold text-base tracking-tight text-[#0F172A]">SalesPilot</span>
               <span className="text-[#334155] font-bold text-[10px] bg-slate-100 border border-[#E2E8F0] px-1.5 py-0.5 rounded-md">AI</span>
@@ -543,9 +541,7 @@ export default function LandingPage({ onStart, onLogin }: LandingPageProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center text-slate-900 font-semibold text-xs">
-                SP
-              </div>
+              <img src="/logo.png" alt="SalesPilot AI Logo" className="w-7 h-7 rounded-lg shadow-sm" />
               <span className="font-semibold text-sm text-white tracking-tight">SalesPilot AI</span>
             </div>
             <p className="text-xs leading-relaxed text-slate-400 font-sans">

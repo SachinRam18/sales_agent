@@ -52,7 +52,7 @@
       "revenue": "$45M",
       "employees": 340,
       "description": "Manufacturer of custom industrial automated machinery and robotic assembly lines for the automotive industry.",
-      "status": "Qualified",
+      "status": "Contacted",
       "score": 95,
       "addedAt": "2026-06-01T10:00:00Z",
       "notes": "Met via initial email. Interested in automated ERP sync. They are currently planning to upgrade their factory floors by Q4 2026."
@@ -66,7 +66,7 @@
       "revenue": "$28M",
       "employees": 220,
       "description": "Provides high-precision sensors, PLC assemblies, and smart industrial measurement integrations for EU markets.",
-      "status": "New",
+      "status": "Meeting Scheduled",
       "score": 89,
       "addedAt": "2026-06-03T14:30:00Z",
       "notes": "Enriched. Buying signal detected: Recently hired 3 control system engineers."
@@ -97,6 +97,33 @@
       "status": "Meeting Scheduled",
       "score": 92,
       "addedAt": "2026-06-07T11:00:00Z"
+    },
+    {
+      "id": "comp-1781000551384",
+      "name": "Hansen Werkzeuge GmbH",
+      "industry": "Manufacturing",
+      "website": "https://www.hansen-werkzeuge.de",
+      "location": "Düsseldorf, Germany",
+      "revenue": "$32M",
+      "employees": 280,
+      "description": "High-grade industrial calibration tools and mechanical torque sensors built for automated assembly checks.",
+      "status": "New",
+      "score": 98,
+      "addedAt": "2026-06-09T10:22:31.384Z",
+      "notes": "\nSynced from discovery agent request."
+    },
+    {
+      "id": "comp-1781002693596",
+      "name": "Vogel Precision Parts",
+      "industry": "Manufacturing",
+      "website": "https://www.vogel-precision.de",
+      "location": "Leipzig, Germany",
+      "revenue": "$19M",
+      "employees": 215,
+      "description": "Supplies milled CNC titanium casings and heavy machinery components to global aerospace prime contracts.",
+      "status": "New",
+      "score": 95,
+      "addedAt": "2026-06-09T10:58:13.596Z"
     }
   ],
   "contacts": [
@@ -144,6 +171,42 @@
       "linkedin": "https://linkedin.com/in/nora-gilcrest-mock",
       "email": "n.gilcrest@zetaanalytics.com",
       "phone": "+1 512 555 3302"
+    },
+    {
+      "id": "cnt-1781000551385-531",
+      "companyId": "comp-1781000551384",
+      "name": "Klaus Hansen",
+      "role": "CEO & Founder",
+      "linkedin": "https://linkedin.com/in/klaus-hansen-mock",
+      "email": "k.hansen@hansen-werkzeuge.de",
+      "phone": "+49 211 400301"
+    },
+    {
+      "id": "cnt-1781000551386-290",
+      "companyId": "comp-1781000551384",
+      "name": "Monika Beck",
+      "role": "Director of Technology",
+      "linkedin": "https://linkedin.com/in/monika-beck-mock",
+      "email": "m.beck@hansen-werkzeuge.de",
+      "phone": "+49 211 400302"
+    },
+    {
+      "id": "cnt-1781002693597-284",
+      "companyId": "comp-1781002693596",
+      "name": "Stephan Vogel",
+      "role": "VP Operations",
+      "linkedin": "https://linkedin.com/in/stephan-vogel-mock",
+      "email": "s.vogel@vogel-precision.de",
+      "phone": "+49 341 889922"
+    },
+    {
+      "id": "cnt-1781002693598-116",
+      "companyId": "comp-1781002693596",
+      "name": "Julia Richter",
+      "role": "VP Purchasing",
+      "linkedin": "https://linkedin.com/in/julia-richter-mock",
+      "email": "j.richter@vogel-precision.de",
+      "phone": "+49 341 889923"
     }
   ],
   "leadScores": {
@@ -166,6 +229,26 @@
       "techMatch": 75,
       "locationMatch": 100,
       "explanation": "Superb location and industry match. Revenue is healthy ($28M) and within scope. Technologies used could represent lower complexity, but growth signals are highly active."
+    },
+    "comp-1781000551384": {
+      "companyId": "comp-1781000551384",
+      "score": 98,
+      "industryMatch": 100,
+      "sizeMatch": 95,
+      "revenueMatch": 70,
+      "techMatch": 90,
+      "locationMatch": 100,
+      "explanation": "Automated grading confirms strong alignment. Highly compatible parameters observed. Handing over to database agents."
+    },
+    "comp-1781002693596": {
+      "companyId": "comp-1781002693596",
+      "score": 95,
+      "industryMatch": 100,
+      "sizeMatch": 95,
+      "revenueMatch": 70,
+      "techMatch": 65,
+      "locationMatch": 100,
+      "explanation": "Automated grading confirms strong alignment. Highly compatible parameters observed. Handing over to database agents."
     }
   },
   "campaigns": [
@@ -198,6 +281,78 @@
   ],
   "activities": [
     {
+      "id": "act-178100272189940uf",
+      "type": "outreach_generated",
+      "description": "Generated outreach sequence for \"Hans Schulz\" (Managing Director)",
+      "timestamp": "2026-06-09T10:58:41.899Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Schulz Maschinenbau GmbH"
+    },
+    {
+      "id": "act-1781002701522h85m",
+      "type": "outreach_generated",
+      "description": "Generated outreach sequence for \"Hans Schulz\" (Managing Director)",
+      "timestamp": "2026-06-09T10:58:21.522Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Schulz Maschinenbau GmbH"
+    },
+    {
+      "id": "act-178100269359910en",
+      "type": "crm_stored",
+      "description": "Imported fresh qualified lead into CRM CRM: \"Vogel Precision Parts\"",
+      "timestamp": "2026-06-09T10:58:13.599Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Vogel Precision Parts"
+    },
+    {
+      "id": "act-1781002095113ecjl",
+      "type": "crm_stored",
+      "description": "Synced existing CRM record attributes: \"Hansen Werkzeuge GmbH\"",
+      "timestamp": "2026-06-09T10:48:15.113Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Hansen Werkzeuge GmbH"
+    },
+    {
+      "id": "act-17810006850304i4x",
+      "type": "crm_status_changed",
+      "description": "Changed status of \"Müller & Söhne Automation\" from \"New\" to \"Meeting Scheduled\"",
+      "timestamp": "2026-06-09T10:24:45.030Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Müller & Söhne Automation"
+    },
+    {
+      "id": "act-17810006371385gwy",
+      "type": "crm_status_changed",
+      "description": "Changed status of \"Schulz Maschinenbau GmbH\" from \"Qualified\" to \"Contacted\"",
+      "timestamp": "2026-06-09T10:23:57.138Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Schulz Maschinenbau GmbH"
+    },
+    {
+      "id": "act-1781000551388ihap",
+      "type": "crm_stored",
+      "description": "Imported fresh qualified lead into CRM CRM: \"Hansen Werkzeuge GmbH\"",
+      "timestamp": "2026-06-09T10:22:31.388Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Hansen Werkzeuge GmbH"
+    },
+    {
+      "id": "act-1781000504233u8dc",
+      "type": "outreach_generated",
+      "description": "Generated outreach sequence for \"Hans Schulz\" (Managing Director)",
+      "timestamp": "2026-06-09T10:21:44.233Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Schulz Maschinenbau GmbH"
+    },
+    {
+      "id": "act-1780996729698jts5",
+      "type": "outreach_generated",
+      "description": "Generated outreach sequence for \"Hans Schulz\" (Managing Director)",
+      "timestamp": "2026-06-09T09:18:49.698Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Schulz Maschinenbau GmbH"
+    },
+    {
       "id": "act-1",
       "type": "lead_discovered",
       "description": "Discovered and qualified Schulz Maschinenbau GmbH based on 'German Manufacturing' ICP profile.",
@@ -223,6 +378,18 @@
     }
   ],
   "notifications": [
+    {
+      "id": "notif-1781002693600",
+      "message": "CRM Agent added newly qualified lead: Vogel Precision Parts",
+      "read": false,
+      "timestamp": "2026-06-09T10:58:13.600Z"
+    },
+    {
+      "id": "notif-1781000551388",
+      "message": "CRM Agent added newly qualified lead: Hansen Werkzeuge GmbH",
+      "read": false,
+      "timestamp": "2026-06-09T10:22:31.388Z"
+    },
     {
       "id": "notif-1",
       "message": "Lead Discovery Agent completed qualification for Müller & Söhne Automation (Score: 89)",
