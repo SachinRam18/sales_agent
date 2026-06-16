@@ -1,4 +1,5 @@
 import * as db from "../db";
+import { duplicateDetectionAgent } from "./DuplicateDetectionAgent";
 
 export class CRMAgent {
   async storeLead(params: {
@@ -33,23 +34,18 @@ export class CRMAgent {
     addLog: (message: string) => void;
   }) {
     const { company, contacts, scoreDetail, addLog } = params;
-    addLog("Running CRM duplicate scans across established entities...");
-
-    // Duplicate detection by name or website
-    const duplicateRes = await db.query(
-      "SELECT id, name, website, notes FROM companies WHERE LOWER(name) = LOWER($1) OR LOWER(website) = LOWER($2) LIMIT 1",
-      [company.name, company.website]
-    );
+    
+    // Duplicate detection check
+    const dupCheck = await duplicateDetectionAgent.checkDuplicate(company.name, company.website, addLog);
 
     let targetCompanyId: string;
     let targetCompany: any;
 
-    if (duplicateRes.rows.length > 0) {
-      const existing = duplicateRes.rows[0];
-      targetCompanyId = existing.id;
-      addLog(`Duplicate detected: Syncing existing CRM record attributes for "${existing.name}".`);
+    if (dupCheck.isDuplicate && dupCheck.existingId) {
+      targetCompanyId = dupCheck.existingId;
+      addLog(`Syncing existing CRM record attributes for "${company.name}".`);
 
-      const updatedNotes = (existing.notes || "") + "\nSynced from discovery agent request.";
+      const updatedNotes = (dupCheck.existingNotes || "") + "\nSynced from discovery agent request.";
       
       // Update existing company
       await db.query(`

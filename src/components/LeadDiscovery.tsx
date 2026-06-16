@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Search, Loader2, ArrowRight, Server, ShieldCheck, Database, FileText, CheckCircle2, Award, ExternalLink, SlidersHorizontal } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Search, Loader2, ShieldCheck, CheckCircle2, ExternalLink, SlidersHorizontal, User, Bot, AlertCircle } from "lucide-react";
 
 interface ICPProfile {
   id: string;
@@ -46,108 +46,126 @@ interface LeadDiscoveryProps {
   userRole: "Admin" | "Team Member" | "Viewer";
 }
 
+type ChatMessage = {
+  id: string;
+  role: "system" | "user" | "assistant";
+  type: "text" | "parsing" | "searching" | "results" | "error";
+  content?: string;
+  parsedData?: any;
+  results?: DiscoveredLead[];
+  syncedIds?: Record<string, boolean>;
+};
+
 export default function LeadDiscovery({ onLeadSynced, userRole }: LeadDiscoveryProps) {
   const [icpProfiles, setIcpProfiles] = useState<ICPProfile[]>([]);
   const [selectedIcpId, setSelectedIcpId] = useState("");
-  
-  // Search parameters
-  const [industry, setIndustry] = useState("Manufacturing");
-  const [country, setCountry] = useState("Germany");
-  const [companySize, setCompanySize] = useState("200-500");
-  const [revenueRange, setRevenueRange] = useState("> $10M");
-  const [keywords, setKeywords] = useState("industrial CNC, automated tools");
-
+  const [promptText, setPromptText] = useState("");
   const [loading, setLoading] = useState(false);
-  const [agentLogs, setAgentLogs] = useState<Array<{ agent: string; message: string; timestamp: string }>>([]);
-  const [results, setResults] = useState<DiscoveredLead[]>([]);
-  const [syncedIds, setSyncedIds] = useState<Record<string, boolean>>({});
-  const [activeStep, setActiveStep] = useState<number | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const [messages, setMessages] = useState<ChatMessage[]>([{
+    id: "welcome",
+    role: "assistant",
+    type: "text",
+    content: "Hello! I am your Lead Discovery Agent. Tell me what kind of companies you are looking for. For example: 'Find me software companies in the USA with 200-500 employees.'"
+  }]);
 
   useEffect(() => {
-    // preload ICP profiles to help configure the quick presets dropdown
     fetch("/api/icp")
       .then((r) => r.json())
       .then((data) => {
         setIcpProfiles(data);
-        if (data.length > 0) {
-          setSelectedIcpId(data[0].id);
-          applyIcpValues(data[0]);
-        }
       })
       .catch((e) => console.error(e));
   }, []);
 
-  const applyIcpValues = (p: ICPProfile) => {
-    setIndustry(p.industry);
-    setCountry(p.country);
-    setCompanySize(p.companySize);
-    setRevenueRange(p.revenueRange);
-    setKeywords(p.keywords || "");
-  };
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const handleIcpSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const id = e.target.value;
     setSelectedIcpId(id);
-    const found = icpProfiles.find((p) => p.id === id);
-    if (found) {
-      applyIcpValues(found);
+    const p = icpProfiles.find((p) => p.id === id);
+    if (p) {
+      setPromptText(`Find me ${p.industry} companies in ${p.country} with ${p.companySize} employees and revenue ${p.revenueRange}. Keywords: ${p.keywords || ""}`);
     }
   };
 
   const runDiscoveryPipeline = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!promptText.trim()) return;
+
+    const newMsgId = Date.now().toString();
+    const userPrompt = promptText;
+    
+    setMessages(prev => [
+      ...prev,
+      { id: newMsgId + "-user", role: "user", type: "text", content: userPrompt },
+      { id: newMsgId + "-agent", role: "assistant", type: "parsing", content: "Parsing natural language prompt..." }
+    ]);
+    
+    setPromptText("");
     setLoading(true);
-    setResults([]);
-    setAgentLogs([]);
-    setActiveStep(1); // step 1: User Request
 
     try {
-      // Step simulation delay sequence to show agent pipeline beautifully
-      const steps = [
-        { step: 2, msg: "Initializing Discovery Agent. Formulating crawling index query tags...", delay: 800 },
-        { step: 3, msg: "Invoking Data Enrichment Agent. Inspecting DNS registers & crawling target subdomains...", delay: 1800 },
-        { step: 4, msg: "Initiating Match Qualification Agent. Comparing firmographics against configured ICP directives...", delay: 2800 },
-        { step: 5, msg: "CRM Agent scanning database to block duplicate corporate domains...", delay: 3800 },
-      ];
-
-      steps.forEach((s) => {
-        setTimeout(() => {
-          setActiveStep(s.step);
-        }, s.delay);
+      // 1. Parse Prompt
+      const parseRes = await fetch("/api/parse-discovery-prompt", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: userPrompt })
       });
+      
+      if (!parseRes.ok) {
+        throw new Error("Failed to parse prompt. Please ensure the backend server is running and updated.");
+      }
+      
+      const parsedData = await parseRes.json();
 
-      const res = await fetch("/api/search-leads", {
+      // Update to Searching state
+      setMessages(prev => prev.map(m => 
+        m.id === newMsgId + "-agent" 
+          ? { ...m, type: "searching", content: "Initiating discovery agents...", parsedData } 
+          : m
+      ));
+
+      // 2. Search Leads
+      const searchRes = await fetch("/api/search-leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          industry,
-          country,
-          companySize,
-          revenueRange,
-          keywords,
+          industry: parsedData.industry,
+          country: parsedData.country,
+          companySize: parsedData.companySize,
+          revenueRange: parsedData.revenueRange,
+          keywords: parsedData.keywords,
           icpId: selectedIcpId || undefined
         })
       });
 
-      if (!res.ok) throw new Error("Agentic search failed execution");
-      const data = await res.json();
-      
-      // Complete step
-      setTimeout(() => {
-        setAgentLogs(data.logs || []);
-        setResults(data.results || []);
-        setActiveStep(null);
-        setLoading(false);
-      }, 4200);
+      if (!searchRes.ok) throw new Error("Agentic search failed execution");
+      const searchData = await searchRes.json();
 
-    } catch (err) {
+      // 3. Display Results
+      setMessages(prev => prev.map(m => 
+        m.id === newMsgId + "-agent" 
+          ? { ...m, type: "results", content: "Discovery completed.", results: searchData.results || [], syncedIds: {} } 
+          : m
+      ));
+
+    } catch (err: any) {
       console.error(err);
+      setMessages(prev => prev.map(m => 
+        m.id === newMsgId + "-agent" 
+          ? { ...m, type: "error", content: err.message || "An unexpected error occurred." } 
+          : m
+      ));
+    } finally {
       setLoading(false);
-      setActiveStep(null);
     }
   };
 
-  const handleStoreCrm = async (lead: DiscoveredLead) => {
+  const handleStoreCrm = async (msgId: string, lead: DiscoveredLead) => {
     if (userRole === "Viewer") {
       alert("Viewer accounts cannot import new entities into CRM.");
       return;
@@ -175,9 +193,13 @@ export default function LeadDiscovery({ onLeadSynced, userRole }: LeadDiscoveryP
       });
 
       if (!res.ok) throw new Error("Could not sync to storage");
-      const data = await res.json();
-
-      setSyncedIds((prev) => ({ ...prev, [lead.id]: true }));
+      
+      setMessages(prev => prev.map(m => {
+        if (m.id === msgId && m.syncedIds) {
+          return { ...m, syncedIds: { ...m.syncedIds, [lead.id]: true } };
+        }
+        return m;
+      }));
       
       if (onLeadSynced) {
         onLeadSynced();
@@ -189,263 +211,205 @@ export default function LeadDiscovery({ onLeadSynced, userRole }: LeadDiscoveryP
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-8 font-sans" id="lead-discovery-root">
+    <div className="flex flex-col h-[calc(100vh-4rem)] bg-slate-50 dark:bg-[#0F172A] font-sans" id="lead-discovery-root">
       
-      {/* Visual Workspace Title */}
-      <div className="border-b border-slate-200 dark:border-[#2A3241] pb-5">
-        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2">
-          <SlidersHorizontal className="w-4 h-4 text-slate-800 dark:text-slate-200" /> Lead Discovery Agent Console
-        </h1>
-        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-          Provide criteria parameters to configure our autonomous crawlers. Our system initiates detailed searches and scores targets.
-        </p>
+      {/* Header */}
+      <div className="flex-none bg-white dark:bg-[#151B2B] border-b border-slate-200 dark:border-[#2A3241] p-4 sm:px-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2">
+            <Bot className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /> Lead Discovery Agent
+          </h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Chat with the autonomous crawler to discover and qualify new prospects.
+          </p>
+        </div>
+        
+        {/* ICP Preset Selector */}
+        {icpProfiles.length > 0 && (
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider hidden sm:inline-block">Preset:</span>
+            <select 
+              value={selectedIcpId} 
+              onChange={handleIcpSelectChange}
+              className="bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-1.5 px-3 text-xs focus:outline-none focus:border-slate-900 dark:text-slate-200"
+            >
+              <option value="">-- Custom --</option>
+              {icpProfiles.map((p) => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
-      {/* Main Grid: Parameters on left, real-time feedback on right */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Parameters Form panel */}
-        <div className="lg:col-span-1">
-          <form className="bg-white dark:bg-[#151B2B] border border-slate-200 dark:border-[#2A3241]/80 rounded-2xl shadow-sm p-6 space-y-5" onSubmit={runDiscoveryPipeline} id="form-discovery-search">
-            <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Target Settings</h3>
-              <Search className="w-4 h-4 text-slate-300" />
-            </div>
-
-            {/* ICP Profile selection to pre-populate elements */}
-            {icpProfiles.length > 0 && (
-              <div>
-                <label className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">Apply ICP Profile Rule Preset</label>
-                <select 
-                  value={selectedIcpId} 
-                  onChange={handleIcpSelectChange}
-                  className="w-full bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-slate-900 focus:bg-white dark:bg-[#151B2B]"
-                >
-                  <option value="">-- Customize parameters manually --</option>
-                  {icpProfiles.map((p) => (
-                    <option key={p.id} value={p.id}>{p.name}</option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            <div className="space-y-4 pt-1">
-              <div>
-                <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1 font-sans">Corporate Sector / Industry</label>
-                <input
-                  type="text"
-                  value={industry}
-                  onChange={(e) => setIndustry(e.target.value)}
-                  placeholder="e.g. Manufacturing, Software, Logistics"
-                  required
-                  className="w-full bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-slate-900 focus:bg-white dark:bg-[#151B2B]"
-                />
+      {/* Chat Messages Area */}
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+        {messages.map((msg) => (
+          <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div className={`flex gap-3 max-w-[90%] sm:max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+              
+              {/* Avatar */}
+              <div className="flex-none w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm border border-slate-200 dark:border-[#2A3241]">
+                {msg.role === 'user' ? (
+                  <div className="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 w-full h-full rounded-full flex items-center justify-center">
+                    <User className="w-4 h-4" />
+                  </div>
+                ) : (
+                  <div className="bg-indigo-600 dark:bg-indigo-500 text-white w-full h-full rounded-full flex items-center justify-center">
+                    <Bot className="w-4 h-4" />
+                  </div>
+                )}
               </div>
 
-              <div>
-                <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Geographic Location / Country</label>
-                <input
-                  type="text"
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  placeholder="e.g. Germany, United States"
-                  required
-                  className="w-full bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-slate-900 focus:bg-white dark:bg-[#151B2B]"
-                />
-              </div>
+              {/* Message Bubble */}
+              <div className={`flex flex-col gap-2 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+                {msg.content && (
+                  <div className={`px-4 py-3 rounded-2xl text-sm shadow-sm ${
+                    msg.role === 'user' 
+                      ? 'bg-slate-900 dark:bg-slate-200 text-white dark:text-slate-900 rounded-tr-sm' 
+                      : msg.type === 'error'
+                        ? 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-400 border border-red-200 dark:border-red-900/50 rounded-tl-sm'
+                        : 'bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] text-slate-800 dark:text-slate-200 rounded-tl-sm'
+                  }`}>
+                    {msg.type === 'parsing' || msg.type === 'searching' ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin text-indigo-500" />
+                        {msg.content}
+                      </span>
+                    ) : msg.type === 'error' ? (
+                      <span className="flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4" />
+                        {msg.content}
+                      </span>
+                    ) : (
+                      <span>{msg.content}</span>
+                    )}
+                  </div>
+                )}
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Size Bracket</label>
-                  <input
-                    type="text"
-                    value={companySize}
-                    onChange={(e) => setCompanySize(e.target.value)}
-                    placeholder="e.g. 200-500"
-                    required
-                    className="w-full bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-slate-900 focus:bg-white dark:bg-[#151B2B]"
-                  />
-                </div>
-                <div>
-                  <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Est. Revenue</label>
-                  <input
-                    type="text"
-                    value={revenueRange}
-                    onChange={(e) => setRevenueRange(e.target.value)}
-                    placeholder="e.g. > $10M"
-                    required
-                    className="w-full bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-slate-900 focus:bg-white dark:bg-[#151B2B]"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="text-[10px] font-semibold text-slate-405 uppercase tracking-wider block mb-1 font-sans">Crawler Directives / Keywords</label>
-                <textarea
-                  value={keywords}
-                  onChange={(e) => setKeywords(e.target.value)}
-                  placeholder="e.g. industrial automated setups, high torque tools"
-                  rows={2}
-                  className="w-full bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-slate-900 focus:bg-white dark:bg-[#151B2B] resize-none"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white font-medium text-xs py-2.5 rounded-lg shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" /> Mining Target Registers...
-                </>
-              ) : (
-                <>
-                  <Search className="w-4 h-4" /> Deploy Agent Sequence
-                </>
-              )}
-            </button>
-          </form>
-        </div>
-
-        {/* Right Side: Multi-Agent flow representation during crawling */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white dark:bg-[#151B2B] border border-slate-200 dark:border-[#2A3241] rounded-2xl shadow-sm p-6 space-y-5">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-[#1E293B] pb-3">Agent Orchestration Monitor</h3>
-            
-            {/* Horizontal flow chart */}
-            <div className="grid grid-cols-6 gap-2 text-center relative" id="multi-agent-orchestrator-ui">
-              {[
-                { step: 1, label: "User Input", desc: "Criteria", Icon: SlidersHorizontal },
-                { step: 2, label: "Discovery", desc: "Plan query", Icon: Search },
-                { step: 3, label: "Enrichment", desc: "Crawl stack", Icon: Server },
-                { step: 4, label: "Scoring", desc: "ICP verify", Icon: Award },
-                { step: 5, label: "CRM Sync", desc: "Deduplicate", Icon: Database },
-                { step: 6, label: "Outreach", desc: "Templates", Icon: FileText },
-              ].map((s) => {
-                const isActive = activeStep === s.step;
-                const isCompleted = activeStep !== null && activeStep > s.step;
-                
-                return (
-                  <div key={s.step} className="space-y-2 relative">
-                    <div className="mx-auto w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 border shadow-sm"
-                      style={{
-                        backgroundColor: isActive ? "#0f172a" : isCompleted ? "#0d9488" : "#f8fafc",
-                        color: isActive || isCompleted ? "#ffffff" : "#94a3b8",
-                        borderColor: isActive ? "#0f172a" : isCompleted ? "#0d9488" : "#e2e8f0"
-                      }}
-                    >
-                      <s.Icon className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-semibold text-slate-700 dark:text-slate-300 truncate">{s.label}</p>
-                      <p className="text-[8px] text-slate-450 mt-0.5 truncate font-mono">{s.desc}</p>
+                {/* Parsed Data Hints */}
+                {msg.parsedData && (
+                  <div className="bg-slate-50 dark:bg-[#151B2B] rounded-xl p-3 border border-slate-200 dark:border-[#2A3241]/50 w-full">
+                    <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Target Settings Detected</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className="inline-flex items-center px-2 py-1 rounded bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 text-[10px] font-medium border border-indigo-100 dark:border-indigo-500/20">
+                        <span className="opacity-70 mr-1 text-[9px] uppercase tracking-wider">Industry:</span> {msg.parsedData.industry || "Any"}
+                      </span>
+                      <span className="inline-flex items-center px-2 py-1 rounded bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 text-[10px] font-medium border border-blue-100 dark:border-blue-500/20">
+                        <span className="opacity-70 mr-1 text-[9px] uppercase tracking-wider">Country:</span> {msg.parsedData.country || "Any"}
+                      </span>
+                      <span className="inline-flex items-center px-2 py-1 rounded bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-[10px] font-medium border border-emerald-100 dark:border-emerald-500/20">
+                        <span className="opacity-70 mr-1 text-[9px] uppercase tracking-wider">Size:</span> {msg.parsedData.companySize || "Any"}
+                      </span>
+                      <span className="inline-flex items-center px-2 py-1 rounded bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 text-[10px] font-medium border border-amber-100 dark:border-amber-500/20">
+                        <span className="opacity-70 mr-1 text-[9px] uppercase tracking-wider">Revenue:</span> {msg.parsedData.revenueRange || "Any"}
+                      </span>
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                )}
 
-            {/* Log display */}
-            {(loading || agentLogs.length > 0) && (
-              <div className="bg-slate-950 text-slate-350 font-mono text-[10px] p-4 rounded-xl space-y-1.5 h-48 overflow-y-auto border border-slate-800" id="terminal-discovery">
-                <p className="text-slate-400 dark:text-slate-500 font-semibold">--- AUTONOMOUS AGENT STREAM INITIATED ---</p>
-                {activeStep! >= 1 && <p className="text-slate-200">&gt; User query formulated correctly: Searching "{industry}" in {country}.</p>}
-                {activeStep! >= 2 && <p className="text-teal-400">&gt; [Discovery Agent] Initiated Web index crawling strategies, targeting {country} directories.</p>}
-                {activeStep! >= 3 && <p className="text-slate-400 dark:text-slate-500">&gt; [Enrichment Agent] Scanning company domains to collect installed tech stack and key decision-makers.</p>}
-                {activeStep! >= 4 && <p className="text-amber-400">&gt; [Grading Agent] Parsing results to deliver custom score grades based on ICP rules...</p>}
-                {activeStep! >= 5 && <p className="text-cyan-400">&gt; [CRM Agent] Inspecting existing relational schemas for duplicated records. Clean setup validated.</p>}
-                
-                {agentLogs.map((log, i) => (
-                  <p key={i} className="text-emerald-400 mt-2">&gt; [{log.agent}] {log.timestamp}: {log.message}</p>
-                ))}
-              </div>
-            )}
-
-            {!loading && results.length === 0 && agentLogs.length === 0 && (
-              <div className="p-8 text-center text-slate-400 dark:text-slate-500 text-xs border border-dashed border-slate-200 dark:border-[#2A3241] rounded-xl bg-slate-50 dark:bg-[#1E293B]/50">
-                Awaiting search triggers. Fill out target parameters and dispatch agents to gather prospects.
-              </div>
-            )}
-
-            {results.length > 0 && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                  <span className="font-semibold text-slate-700 dark:text-slate-300">DISCOVERED ACTIVE LEADS ({results.length})</span>
-                  <span className="text-emerald-600 font-medium flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Discovery Completed Successfully
-                  </span>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse" id="discovery-results-table">
-                    <thead>
-                      <tr className="border-b border-slate-200 dark:border-[#2A3241] text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                        <th className="pb-3 pr-2 font-medium">Company Name</th>
-                        <th className="pb-3 pr-2 font-medium">Firmographics</th>
-                        <th className="pb-3 pr-2 font-medium">Target Stakeholders</th>
-                        <th className="pb-3 pr-2 text-center font-medium">Score</th>
-                        <th className="pb-3 text-right font-medium">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {results.map((lead) => (
-                        <tr key={lead.id} className="hover:bg-slate-50 dark:hover:bg-[#0F172A]/50">
-                          <td className="py-3.5 pr-2 max-w-[200px]">
-                            <div className="font-semibold text-slate-900 dark:text-slate-50 flex items-center gap-1.5">
-                              {lead.name}
-                              <a href={lead.website} target="_blank" rel="noopener noreferrer" className="p-0.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:text-slate-50">
-                                <ExternalLink className="w-3 h-3" />
-                              </a>
-                            </div>
-                            <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-normal truncate mt-0.5">{lead.website}</span>
-                          </td>
-                          <td className="py-3.5 pr-2 text-[11px] text-slate-600 dark:text-slate-400 space-y-0.5">
-                            <div>Location: <strong className="text-slate-800 dark:text-slate-200 font-medium">{lead.location}</strong></div>
-                            <div>Employees: <strong className="text-slate-800 dark:text-slate-200 font-medium">{lead.employees}</strong></div>
-                            <div>Tech: <strong className="text-teal-600 text-[10px] font-mono bg-teal-50 px-1 py-0.5 rounded">{lead.technologies}</strong></div>
-                          </td>
-                          <td className="py-3.5 pr-2 text-[10px] text-slate-500 dark:text-slate-400 space-y-1">
-                            {lead.contacts && lead.contacts.map((c, ci) => (
-                              <div key={ci} className="border-l-2 border-slate-200 dark:border-[#2A3241] pl-1.5">
-                                <strong className="text-slate-700 dark:text-slate-300 block text-[11px] font-medium">{c.name}</strong>
-                                <span className="block truncate max-w-[120px]">{c.role}</span>
-                              </div>
+                {/* Results Table inside Agent Bubble */}
+                {msg.type === 'results' && msg.results && (
+                  <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-xl shadow-sm overflow-hidden w-full max-w-[800px] mt-2">
+                    <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-[#151B2B] px-4 py-3 border-b border-slate-200 dark:border-[#2A3241]">
+                      <span className="font-semibold text-slate-700 dark:text-slate-300">DISCOVERED LEADS ({msg.results.length})</span>
+                      <span className="text-emerald-600 font-medium flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Scoring Complete
+                      </span>
+                    </div>
+                    
+                    {msg.results.length === 0 ? (
+                      <div className="p-6 text-center text-sm text-slate-500">No leads found matching these criteria.</div>
+                    ) : (
+                      <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
+                        <table className="w-full text-left text-xs border-collapse">
+                          <thead className="sticky top-0 bg-white dark:bg-[#1E293B] shadow-sm">
+                            <tr className="border-b border-slate-200 dark:border-[#2A3241] text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                              <th className="py-3 px-4 font-medium">Company</th>
+                              <th className="py-3 px-4 font-medium">Details</th>
+                              <th className="py-3 px-4 text-center font-medium">Score</th>
+                              <th className="py-3 px-4 text-right font-medium">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100 dark:divide-[#2A3241]/50">
+                            {msg.results.map((lead) => (
+                              <tr key={lead.id} className="hover:bg-slate-50 dark:hover:bg-[#0F172A]/30 transition-colors">
+                                <td className="py-3 px-4">
+                                  <div className="font-semibold text-slate-900 dark:text-slate-50 flex items-center gap-1.5">
+                                    {lead.name}
+                                    <a href={lead.website} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-slate-900 dark:hover:text-slate-100">
+                                      <ExternalLink className="w-3 h-3" />
+                                    </a>
+                                  </div>
+                                  <span className="text-[10px] text-slate-500 block font-normal truncate mt-0.5">{lead.website}</span>
+                                </td>
+                                <td className="py-3 px-4 text-[11px] text-slate-600 dark:text-slate-400">
+                                  <div>{lead.location} • {lead.employees} emp</div>
+                                </td>
+                                <td className="py-3 px-4 text-center">
+                                  <span className={`px-2 py-0.5 rounded font-semibold inline-block text-[10px] ${lead.score >= 90 ? "bg-emerald-50 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800" : "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-[#2A3241]"}`}>
+                                    {lead.score}
+                                  </span>
+                                </td>
+                                <td className="py-3 px-4 text-right font-medium">
+                                  {msg.syncedIds && msg.syncedIds[lead.id] ? (
+                                    <span className="text-emerald-600 font-semibold flex items-center justify-end gap-1 text-[11px]">
+                                      <ShieldCheck className="w-3.5 h-3.5" /> Synced
+                                    </span>
+                                  ) : (
+                                    <button
+                                      onClick={() => handleStoreCrm(msg.id, lead)}
+                                      className="bg-white dark:bg-[#151B2B] hover:bg-slate-50 dark:hover:bg-[#0F172A] text-slate-900 dark:text-slate-50 border border-slate-200 dark:border-[#2A3241] font-semibold text-[10px] px-2.5 py-1.5 rounded transition shadow-sm"
+                                    >
+                                      Import
+                                    </button>
+                                  )}
+                                </td>
+                              </tr>
                             ))}
-                          </td>
-                          <td className="py-3.5 pr-2 text-center">
-                            <span className={`px-2 py-0.5 rounded font-semibold block text-center max-w-[50px] mx-auto text-[10px] ${lead.score >= 90 ? "bg-emerald-50 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800" : "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-[#2A3241]"}`}>
-                              {lead.score}
-                            </span>
-                          </td>
-                          <td className="py-3.5 text-right font-medium">
-                            {syncedIds[lead.id] ? (
-                              <span className="text-emerald-600 font-semibold flex items-center justify-end gap-1 text-[11px]">
-                                <ShieldCheck className="w-3.5 h-3.5" /> Synced to CRM
-                              </span>
-                            ) : (
-                              <button
-                                onClick={() => handleStoreCrm(lead)}
-                                className="bg-white dark:bg-[#151B2B] hover:bg-slate-50 dark:hover:bg-[#0F172A] text-slate-900 dark:text-slate-50 border border-slate-200 dark:border-[#2A3241] font-semibold text-[11px] px-3 py-1.5 rounded-md transition shadow-sm cursor-pointer"
-                              >
-                                Sync Import
-                              </button>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
-            )}
-
+            </div>
           </div>
-        </div>
-
+        ))}
+        <div ref={messagesEndRef} />
       </div>
 
+      {/* Input Area */}
+      <div className="flex-none p-4 sm:p-6 bg-white dark:bg-[#151B2B] border-t border-slate-200 dark:border-[#2A3241]">
+        <form onSubmit={runDiscoveryPipeline} className="max-w-4xl mx-auto relative flex items-end gap-3">
+          <div className="relative flex-1">
+            <textarea
+              value={promptText}
+              onChange={(e) => setPromptText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  runDiscoveryPipeline(e as any);
+                }
+              }}
+              placeholder="Ask the agent to find leads... (Press Enter to send)"
+              rows={2}
+              className="w-full bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-2xl py-3 px-4 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:text-slate-100 resize-none placeholder:text-slate-400 dark:placeholder:text-slate-500 shadow-sm"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loading || !promptText.trim()}
+            className="flex-none bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:text-slate-500 text-white h-[46px] w-[46px] rounded-full flex items-center justify-center shadow-md transition-all shrink-0 cursor-pointer disabled:cursor-not-allowed"
+          >
+            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
+          </button>
+        </form>
+        <p className="text-center text-[10px] text-slate-400 mt-2">
+          The autonomous agent will parse your request, crawl indexes, enrich data, and grade leads against your ICP.
+        </p>
+      </div>
     </div>
   );
 }

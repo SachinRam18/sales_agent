@@ -6,9 +6,12 @@ import dotenv from "dotenv";
 
 import * as db from "./src/db";
 import { leadDiscoveryAgent } from "./src/agents/LeadDiscoveryAgent";
+import { prospectEnrichmentAgent } from "./src/agents/ProspectEnrichmentAgent";
 import { leadQualificationAgent } from "./src/agents/LeadQualificationAgent";
 import { crmAgent } from "./src/agents/CRMAgent";
 import { outreachAgent } from "./src/agents/OutreachAgent";
+import { mockOutreachWorkflow } from "./src/agents/MockOutreachWorkflow";
+import { generateJSON, isAIEnabled } from "./src/ai";
 
 dotenv.config();
 
@@ -176,12 +179,22 @@ app.all("/api/search-leads", async (req, res) => {
       addLog: (msg) => addLog("Lead Discovery Agent", msg)
     });
 
-    // Agent 2: Lead Qualification Agent
+    // Agent 2: Prospect Enrichment Agent
+    const enrichedCompanies: any[] = [];
+    for (const company of discoveredCompanies) {
+      const enriched = await prospectEnrichmentAgent.enrich(
+        company,
+        (msg) => addLog("Prospect Enrichment Agent", msg)
+      );
+      enrichedCompanies.push(enriched);
+    }
+
+    // Agent 3: Lead Qualification Agent
     const icps = await db.getICPs();
     const activeIcp = icpId ? icps.find(i => i.id === icpId) : icps[0];
 
     const scoredResults: any[] = [];
-    for (const company of discoveredCompanies) {
+    for (const company of enrichedCompanies) {
       const scoreObj = await leadQualificationAgent.scoreLead(
         company,
         activeIcp || { industry, country, companySize, revenueRange, keywords },
@@ -207,6 +220,61 @@ app.all("/api/search-leads", async (req, res) => {
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message, logs });
+  }
+});
+
+// Mock Outreach Workflow runner (SDR Pipeline Simulation)
+app.post("/api/run-mock-outreach", async (req, res) => {
+  const logs: string[] = [];
+  const addLog = (msg: string) => {
+    logs.push(msg);
+    console.log(`[Mock Outreach Endpoint] ${msg}`);
+  };
+
+  try {
+    const results = await mockOutreachWorkflow.runWorkflow(addLog);
+    res.json({ success: true, logs, results });
+  } catch (error: any) {
+    res.status(500).json({ success: false, error: error.message, logs });
+  }
+});
+
+// Parse Discovery Prompt endpoint
+app.post("/api/parse-discovery-prompt", async (req, res) => {
+  const { prompt } = req.body;
+  if (!prompt) {
+    return res.status(400).json({ error: "Prompt is required" });
+  }
+
+  if (isAIEnabled()) {
+    const aiPrompt = `You are an expert sales target extractor. 
+Extract the following search parameters from the user's prompt:
+- industry: The corporate sector or industry.
+- country: The geographic location or country.
+- companySize: The size bracket (e.g. 200-500).
+- revenueRange: The estimated revenue (e.g. > $10M).
+- keywords: Crawler directives or keywords.
+
+User Prompt: "${prompt}"
+
+Return ONLY a valid JSON object with the keys: industry, country, companySize, revenueRange, keywords. If a parameter is not mentioned, use an empty string.`;
+
+    try {
+      const extracted = await generateJSON(aiPrompt, null, 300);
+      return res.json(extracted);
+    } catch (error: any) {
+      console.error("[parse-discovery-prompt] AI parsing failed:", error.message);
+      return res.status(500).json({ error: "Failed to parse prompt with AI." });
+    }
+  } else {
+    // Fallback if AI not enabled
+    return res.json({
+      industry: "Manufacturing",
+      country: "Germany",
+      companySize: "200-500",
+      revenueRange: "> $10M",
+      keywords: "Machinery"
+    });
   }
 });
 

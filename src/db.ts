@@ -680,7 +680,7 @@ export async function getNotifications() {
 
 export async function addNotification(message: string) {
   if (useSim) return dbInstance.addNotification(message);
-  const id = "notif-" + Date.now();
+  const id = "notif-" + Date.now() + "-" + Math.floor(Math.random() * 10000);
   await pool.query(`
     INSERT INTO notifications (id, message, read)
     VALUES ($1, $2, $3)

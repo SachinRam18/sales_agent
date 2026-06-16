@@ -520,7 +520,7 @@ export class Database {
 
   addNotification(message: string) {
     const notif: Notification = {
-      id: "notif-" + Date.now(),
+      id: "notif-" + Date.now() + "-" + Math.floor(Math.random() * 10000),
       message,
       read: false,
       timestamp: new Date().toISOString()
