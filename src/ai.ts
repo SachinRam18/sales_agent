@@ -13,7 +13,7 @@ export function isAIEnabled(): boolean {
   return isOR || isGemini;
 }
 
-export async function generateJSON(prompt: string, schema?: any): Promise<any> {
+export async function generateJSON(prompt: string, schema?: any, maxTokens: number = 2000): Promise<any> {
   if (isOR) {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
@@ -28,7 +28,8 @@ export async function generateJSON(prompt: string, schema?: any): Promise<any> {
         messages: [
           { role: "user", content: prompt }
         ],
-        response_format: { type: "json_object" }
+        response_format: { type: "json_object" },
+        max_tokens: maxTokens
       })
     });
 
@@ -48,6 +49,7 @@ export async function generateJSON(prompt: string, schema?: any): Promise<any> {
     const ai = new GoogleGenAI({ apiKey: geminiKey });
     const config: any = {
       responseMimeType: "application/json",
+      maxOutputTokens: maxTokens,
     };
     if (schema) {
       config.responseSchema = schema;

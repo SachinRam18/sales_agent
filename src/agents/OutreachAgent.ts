@@ -81,7 +81,7 @@ Return ONLY valid JSON with no markdown or extra text:
 }`;
 
     try {
-      const result = await generateJSON(prompt);
+      const result = await generateJSON(prompt, null, 2000);
       if (result && result.linkedinMessageObj && result.emailObj && result.followUpObj) {
         await db.addActivity("outreach_generated", `AI-generated outreach sequence for "${contactName}" (${contactRole}) at ${companyName}`, "sachinram6363@gmail.com", companyName);
         return result as OutreachSequence;

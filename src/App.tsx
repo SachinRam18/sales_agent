@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { 
   Users, Target, Send, ShieldAlert, BadgeCheck, SlidersHorizontal, BarChart2, 
-  Puzzle, LogOut, Layout, Bell, Check, Menu, X, Sparkles, FolderLock 
+  Puzzle, LogOut, Layout, Bell, Check, Menu, X, Sparkles, FolderLock, Moon, Sun
 } from "lucide-react";
 
 // Modular Views
@@ -45,6 +45,20 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Load telemetry notifications
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem("theme") === "dark";
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDarkMode]);
+
   const fetchNotifications = async () => {
     try {
       const res = await fetch("/api/notifications");
@@ -130,7 +144,14 @@ export default function App() {
   ] as const;
 
   if (currentPage === "landing") {
-    return <LandingPage onStart={() => setCurrentPage("auth")} onLogin={() => setCurrentPage("auth")} />;
+    return (
+      <LandingPage 
+        onStart={() => setCurrentPage("auth")} 
+        onLogin={() => setCurrentPage("auth")} 
+        isDarkMode={isDarkMode}
+        toggleDarkMode={() => setIsDarkMode(!isDarkMode)}
+      />
+    );
   }
 
   if (currentPage === "auth") {
@@ -138,21 +159,21 @@ export default function App() {
   }
 
   return (
-    <div className="bg-[#F8FAFC] min-h-screen flex text-slate-900 font-sans" id="application-root">
+    <div className="bg-[#F8FAFC] min-h-screen flex text-slate-900 dark:text-slate-50 font-sans" id="application-root">
       
       {/* Mobile Sidebar overlay toggler */}
       <div className="md:hidden fixed top-4 left-4 z-50">
         <button 
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="p-2 bg-white rounded-lg shadow-sm border border-slate-200"
+          className="p-2 bg-white dark:bg-[#151B2B] rounded-lg shadow-sm border border-slate-200 dark:border-[#2A3241]"
         >
-          {isSidebarOpen ? <X className="w-5 h-5 text-slate-600" /> : <Menu className="w-5 h-5 text-slate-600" />}
+          {isSidebarOpen ? <X className="w-5 h-5 text-slate-600 dark:text-slate-400" /> : <Menu className="w-5 h-5 text-slate-600 dark:text-slate-400" />}
         </button>
       </div>
 
       {/* Main Persistent Desktop Sidebar */}
       <aside 
-        className={`bg-white border-r border-slate-200 w-64 flex flex-col justify-between fixed h-full z-40 transition-transform duration-200
+        className={`bg-white dark:bg-[#151B2B] border-r border-slate-200 dark:border-[#2A3241] w-64 flex flex-col justify-between fixed h-full z-40 transition-transform duration-200
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
         id="side-nav-aside"
       >
@@ -161,8 +182,8 @@ export default function App() {
           <div className="px-6 flex items-center gap-2.5">
             <img src="/logo.png" alt="SalesPilot AI Logo" className="w-8 h-8 rounded-lg shadow-sm" />
             <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-base text-slate-900 tracking-tight">SalesPilot</span>
-              <span className="text-slate-800 font-bold text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-md border border-slate-200">AI</span>
+              <span className="font-semibold text-base text-slate-900 dark:text-slate-50 tracking-tight">SalesPilot</span>
+              <span className="text-slate-800 dark:text-slate-200 font-bold text-[10px] bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-md border border-slate-200 dark:border-[#2A3241]">AI</span>
             </div>
           </div>
 
@@ -179,9 +200,9 @@ export default function App() {
                     if (item.id !== "crm") setSelectedCompanyId(null);
                   }}
                   className={`w-full flex items-center gap-3 px-4 py-2 text-xs font-medium tracking-wide rounded-lg transition-all duration-150
-                    ${isActive ? "bg-slate-950 text-white font-semibold shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"}`}
+                    ${isActive ? "bg-slate-950 text-white font-semibold shadow-sm" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-slate-50 hover:bg-slate-100 dark:hover:bg-slate-700"}`}
                 >
-                  <item.Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-slate-400 group-hover:text-slate-900"}`} />
+                  <item.Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-900 dark:text-slate-50"}`} />
                   {item.label}
                 </button>
               );
@@ -191,15 +212,15 @@ export default function App() {
 
         {/* User login overview & actions bottom sidebar block */}
         {user && (
-          <div className="p-4 border-t border-slate-150 space-y-3 bg-slate-50/55">
+          <div className="p-4 border-t border-slate-150 space-y-3 bg-slate-50 dark:bg-[#1E293B]/55">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-700 font-bold text-xs border border-slate-300">
+              <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-700 dark:text-slate-300 font-bold text-xs border border-slate-300">
                 {user.name.split(" ").map(w => w[0]).join("")}
               </div>
               <div className="truncate text-xs">
-                <span className="font-semibold text-slate-800 block truncate">{user.name}</span>
-                <span className="text-[10px] text-slate-400 block truncate font-mono">{user.email}</span>
-                <span className="text-[9px] bg-slate-100 border border-slate-200 text-slate-600 font-medium px-1.5 py-0.5 rounded-md inline-block mt-1 uppercase">
+                <span className="font-semibold text-slate-800 dark:text-slate-200 block truncate">{user.name}</span>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 block truncate font-mono">{user.email}</span>
+                <span className="text-[9px] bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-[#2A3241] text-slate-600 dark:text-slate-400 font-medium px-1.5 py-0.5 rounded-md inline-block mt-1 uppercase">
                   {user.role}
                 </span>
               </div>
@@ -207,7 +228,7 @@ export default function App() {
 
             <button
               onClick={handleLogout}
-              className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-[10px] font-semibold text-slate-500 hover:text-rose-600 border border-slate-200 bg-white rounded-md hover:bg-slate-50 transition shadow-sm"
+              className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-[10px] font-semibold text-slate-500 dark:text-slate-400 hover:text-rose-600 border border-slate-200 dark:border-[#2A3241] bg-white dark:bg-[#151B2B] rounded-md hover:bg-slate-50 dark:hover:bg-[#0F172A] transition shadow-sm"
             >
               <LogOut className="w-3.5 h-3.5" /> Log Out
             </button>
@@ -219,21 +240,30 @@ export default function App() {
       <main className="flex-1 md:pl-64 flex flex-col min-h-screen relative" id="workspace-main">
         
         {/* Top telemetry bar */}
-        <header className="sticky top-0 bg-white/85 backdrop-blur-md border-b border-slate-200 h-16 flex items-center justify-between px-4 sm:px-6 z-30">
+        <header className="sticky top-0 bg-white dark:bg-[#151B2B]/85 backdrop-blur-md border-b border-slate-200 dark:border-[#2A3241] h-16 flex items-center justify-between px-4 sm:px-6 z-30">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span className="text-xs font-medium text-slate-600 tracking-tight">
+            <span className="text-xs font-medium text-slate-600 dark:text-slate-400 tracking-tight">
               SDR Pipeline Connected
             </span>
           </div>
 
           <div className="flex items-center gap-4">
             
+            {/* Theme Toggle */}
+            <button
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-lg border border-slate-200 dark:border-[#2A3241] transition shadow-sm"
+              title="Toggle theme"
+            >
+              {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+
             {/* Notifications panel Bell */}
             <div className="relative">
               <button 
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="p-1.5 hover:bg-slate-100 text-slate-500 rounded-lg border border-slate-200 relative transition shadow-sm"
+                className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-lg border border-slate-200 dark:border-[#2A3241] relative transition shadow-sm"
                 title="Notifications feed"
               >
                 <Bell className="w-4 h-4" />
@@ -243,9 +273,9 @@ export default function App() {
               </button>
 
               {showNotifications && (
-                <div className="absolute right-0 mt-2.5 w-80 bg-white border border-slate-200 rounded-xl shadow-xl p-4 space-y-3 z-50 animate-fade-in-up">
-                  <div className="flex items-center justify-between border-b pb-2 border-slate-100">
-                    <span className="text-xs font-semibold text-slate-800">Orchestrator Logs</span>
+                <div className="absolute right-0 mt-2.5 w-80 bg-white dark:bg-[#151B2B] border border-slate-200 dark:border-[#2A3241] rounded-xl shadow-xl p-4 space-y-3 z-50 animate-fade-in-up">
+                  <div className="flex items-center justify-between border-b pb-2 border-slate-100 dark:border-[#1E293B]">
+                    <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">Orchestrator Logs</span>
                     <button 
                       onClick={clearNotifications}
                       className="text-[10px] text-blue-650 font-semibold hover:underline"
@@ -256,12 +286,12 @@ export default function App() {
                   <div className="space-y-3 max-h-[250px] overflow-y-auto">
                     {notifications.map((n) => (
                       <div key={n.id} className="text-[11px] leading-relaxed">
-                        <p className={`text-slate-600 ${!n.read ? "font-semibold text-slate-900" : ""}`}>{n.message}</p>
-                        <span className="text-[9px] text-slate-400 font-mono mt-0.5 block">{new Date(n.timestamp).toLocaleTimeString()}</span>
+                        <p className={`text-slate-600 dark:text-slate-400 ${!n.read ? "font-semibold text-slate-900 dark:text-slate-50" : ""}`}>{n.message}</p>
+                        <span className="text-[9px] text-slate-400 dark:text-slate-500 font-mono mt-0.5 block">{new Date(n.timestamp).toLocaleTimeString()}</span>
                       </div>
                     ))}
                     {notifications.length === 0 && (
-                      <p className="text-xs text-slate-400 text-center py-2">No alerts on record.</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 text-center py-2">No alerts on record.</p>
                     )}
                   </div>
                 </div>
@@ -269,7 +299,7 @@ export default function App() {
             </div>
 
             {/* Platform indicator badge */}
-            <div className="hidden sm:flex items-center gap-1.5 text-xs font-semibold bg-slate-50 border border-slate-200 text-slate-700 px-3 py-1 rounded-full">
+            <div className="hidden sm:flex items-center gap-1.5 text-xs font-semibold bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] text-slate-700 dark:text-slate-300 px-3 py-1 rounded-full">
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
               Live Sandbox
             </div>
@@ -277,7 +307,7 @@ export default function App() {
         </header>
 
         {/* View content injection */}
-        <section className="flex-1 bg-[#F8FAFC]">
+        <section className="flex-1 bg-[#F8FAFC] dark:bg-[#0B1120]">
           {currentPage === "dashboard" && (
             <DashboardView 
               onNavigateTo={handleNavigate} 

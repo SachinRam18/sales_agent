@@ -52,7 +52,7 @@
       "revenue": "$45M",
       "employees": 340,
       "description": "Manufacturer of custom industrial automated machinery and robotic assembly lines for the automotive industry.",
-      "status": "Contacted",
+      "status": "Converted",
       "score": 95,
       "addedAt": "2026-06-01T10:00:00Z",
       "notes": "Met via initial email. Interested in automated ERP sync. They are currently planning to upgrade their factory floors by Q4 2026."
@@ -277,9 +277,109 @@
       "conversionRate": 5.5,
       "status": "Active",
       "createdAt": "2026-06-05T15:00:00Z"
+    },
+    {
+      "name": "sachin",
+      "audience": "German Manufacturing Leader",
+      "template": "hello",
+      "schedule": "sachin ram",
+      "id": "camp-1781184391059",
+      "createdAt": "2026-06-11T13:26:31.059Z",
+      "sentCount": 0,
+      "openRate": 0,
+      "replyRate": 0,
+      "conversionRate": 0,
+      "status": "Active"
     }
   ],
   "activities": [
+    {
+      "id": "act-1781184406777gq8f",
+      "type": "outreach_generated",
+      "description": "Generated outreach (template) for \"Hans Schulz\" at Schulz Maschinenbau GmbH",
+      "timestamp": "2026-06-11T13:26:46.777Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Schulz Maschinenbau GmbH"
+    },
+    {
+      "id": "act-1781184391107ac5n",
+      "type": "campaign_saved",
+      "description": "Created campaign name: \"sachin\" with audience template.",
+      "timestamp": "2026-06-11T13:26:31.107Z",
+      "userEmail": "sachinram6363@gmail.com"
+    },
+    {
+      "id": "act-1781184319587doww",
+      "type": "outreach_generated",
+      "description": "AI-generated outreach sequence for \"Hans Schulz\" (Managing Director) at Schulz Maschinenbau GmbH",
+      "timestamp": "2026-06-11T13:25:19.587Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Schulz Maschinenbau GmbH"
+    },
+    {
+      "id": "act-17811842785577330",
+      "type": "outreach_generated",
+      "description": "AI-generated outreach sequence for \"Hans Schulz\" (Managing Director) at Schulz Maschinenbau GmbH",
+      "timestamp": "2026-06-11T13:24:38.557Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Schulz Maschinenbau GmbH"
+    },
+    {
+      "id": "act-1781184235091qyfp",
+      "type": "outreach_generated",
+      "description": "Generated outreach (template) for \"Hans Schulz\" at Schulz Maschinenbau GmbH",
+      "timestamp": "2026-06-11T13:23:55.091Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Schulz Maschinenbau GmbH"
+    },
+    {
+      "id": "act-178118411810237xn",
+      "type": "outreach_generated",
+      "description": "AI-generated outreach sequence for \"Hans Schulz\" (Managing Director) at Schulz Maschinenbau GmbH",
+      "timestamp": "2026-06-11T13:21:58.102Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Schulz Maschinenbau GmbH"
+    },
+    {
+      "id": "act-1781184102522bgel",
+      "type": "crm_status_changed",
+      "description": "Changed status of \"Schulz Maschinenbau GmbH\" from \"Contacted\" to \"Converted\"",
+      "timestamp": "2026-06-11T13:21:42.522Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Schulz Maschinenbau GmbH"
+    },
+    {
+      "id": "act-1781184039732b89u",
+      "type": "outreach_generated",
+      "description": "AI-generated outreach sequence for \"Dieter Brand\" (Chief of Operations) at Schulz Maschinenbau GmbH",
+      "timestamp": "2026-06-11T13:20:39.732Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Schulz Maschinenbau GmbH"
+    },
+    {
+      "id": "act-1781184025700vdqd",
+      "type": "outreach_generated",
+      "description": "AI-generated outreach sequence for \"Klaus Hansen\" (CEO & Founder) at Hansen Werkzeuge GmbH",
+      "timestamp": "2026-06-11T13:20:25.700Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Hansen Werkzeuge GmbH"
+    },
+    {
+      "id": "act-1781184014484xhbr",
+      "type": "outreach_generated",
+      "description": "AI-generated outreach sequence for \"Hans Schulz\" (Managing Director) at Schulz Maschinenbau GmbH",
+      "timestamp": "2026-06-11T13:20:14.484Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Schulz Maschinenbau GmbH"
+    },
+    {
+      "id": "act-1781184002140e1uh",
+      "type": "outreach_generated",
+      "description": "AI-generated outreach sequence for \"Hans Schulz\" (Managing Director) at Schulz Maschinenbau GmbH",
+      "timestamp": "2026-06-11T13:20:02.140Z",
+      "userEmail": "sachinram6363@gmail.com",
+      "companyName": "Schulz Maschinenbau GmbH"
+    },
     {
       "id": "act-178100272189940uf",
       "type": "outreach_generated",

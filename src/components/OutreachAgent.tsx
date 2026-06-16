@@ -120,11 +120,11 @@ export default function OutreachAgent({ userRole }: OutreachAgentProps) {
     <div className="p-4 sm:p-6 lg:p-8 space-y-8 font-sans" id="outreach-agent-root">
       
       {/* Title */}
-      <div className="border-b border-slate-200 pb-5">
-        <h1 className="text-xl font-semibold text-slate-900 tracking-tight flex items-center gap-2">
-          <Send className="w-4 h-4 text-slate-800" /> Outreach & Sequencer Agent
+      <div className="border-b border-slate-200 dark:border-[#2A3241] pb-5">
+        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2">
+          <Send className="w-4 h-4 text-slate-800 dark:text-slate-200" /> Outreach & Sequencer Agent
         </h1>
-        <p className="text-xs text-slate-400 mt-1">
+        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
           Select verified decision-makers from CRM and task our Outreach Agent to write context-aware outbound schedules.
         </p>
       </div>
@@ -134,15 +134,15 @@ export default function OutreachAgent({ userRole }: OutreachAgentProps) {
         
         {/* Input Parameters selection */}
         <div className="lg:col-span-1 space-y-5">
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-5 shadow-sm">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-3">Outbound Targets</h3>
+          <div className="bg-white dark:bg-[#151B2B] border border-slate-200 dark:border-[#2A3241] rounded-2xl p-5 space-y-5 shadow-sm">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-[#1E293B] pb-3">Outbound Targets</h3>
 
             <div>
-              <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-1">Select CRM Corporate Entity</label>
+              <label className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">Select CRM Corporate Entity</label>
               <select
                 value={selectedCompanyId}
                 onChange={(e) => setSelectedCompanyId(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-slate-900"
+                className="w-full bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-slate-900"
               >
                 <option value="">-- Choose Account --</option>
                 {companies.map((c) => (
@@ -152,12 +152,12 @@ export default function OutreachAgent({ userRole }: OutreachAgentProps) {
             </div>
 
             <div>
-              <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-1">Target Decision Maker Contact</label>
+              <label className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">Target Decision Maker Contact</label>
               <select
                 value={selectedContactId}
                 onChange={(e) => setSelectedContactId(e.target.value)}
                 disabled={contacts.length === 0}
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-slate-900 disabled:opacity-50"
+                className="w-full bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-slate-900 disabled:opacity-50"
               >
                 <option value="">-- Choose Contact Stakeholder --</option>
                 {contacts.map((con) => (
@@ -186,9 +186,9 @@ export default function OutreachAgent({ userRole }: OutreachAgentProps) {
             </button>
           </div>
 
-          <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 text-xs text-slate-600 leading-relaxed space-y-2">
-            <h4 className="font-semibold text-slate-805 flex items-center gap-1.5"><Users className="w-4 h-4 text-slate-700" /> Multi-Agent Integration</h4>
-            <p className="text-[11px] text-slate-500">
+          <div className="bg-slate-50 dark:bg-[#1E293B] rounded-xl p-4 border border-slate-200 dark:border-[#2A3241] text-xs text-slate-600 dark:text-slate-400 leading-relaxed space-y-2">
+            <h4 className="font-semibold text-slate-805 flex items-center gap-1.5"><Users className="w-4 h-4 text-slate-700 dark:text-slate-300" /> Multi-Agent Integration</h4>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">
               The outreach copy dynamically ingests company descriptions, ICP criteria rules, and target executive job titles to produce high-context emails.
             </p>
           </div>
@@ -197,15 +197,15 @@ export default function OutreachAgent({ userRole }: OutreachAgentProps) {
         {/* Right Generated Content Blocks */}
         <div className="lg:col-span-2 space-y-6">
           {loading && (
-            <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center text-slate-400 text-xs flex flex-col items-center justify-center gap-3 shadow-sm">
-              <RefreshCw className="w-8 h-8 text-slate-900 animate-spin" />
-              <p className="font-semibold text-slate-700">Writing personalized follow-up blocks...</p>
-              <p className="text-slate-400 max-w-xs text-[11px]">Deploying Gemini-3.5-flash content guidelines to map corporate values.</p>
+            <div className="bg-white dark:bg-[#151B2B] border border-slate-200 dark:border-[#2A3241] rounded-2xl p-12 text-center text-slate-400 dark:text-slate-500 text-xs flex flex-col items-center justify-center gap-3 shadow-sm">
+              <RefreshCw className="w-8 h-8 text-slate-900 dark:text-slate-50 animate-spin" />
+              <p className="font-semibold text-slate-700 dark:text-slate-300">Writing personalized follow-up blocks...</p>
+              <p className="text-slate-400 dark:text-slate-500 max-w-xs text-[11px]">Deploying Gemini-3.5-flash content guidelines to map corporate values.</p>
             </div>
           )}
 
           {!loading && !generatedCopy && (
-            <div className="bg-white border border-dashed border-slate-200 rounded-2xl p-12 text-center text-slate-400 text-xs">
+            <div className="bg-white dark:bg-[#151B2B] border border-dashed border-slate-200 dark:border-[#2A3241] rounded-2xl p-12 text-center text-slate-400 dark:text-slate-500 text-xs">
               Awaiting payload configuration. Select a company and target executive contact to write templates.
             </div>
           )}
@@ -214,67 +214,67 @@ export default function OutreachAgent({ userRole }: OutreachAgentProps) {
             <div className="grid grid-cols-1 gap-6 animate-fade-in" id="outreach-output-workspace">
               
               {/* Email Outbound Sequence */}
-              <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <span className="text-xs font-semibold text-slate-800 flex items-center gap-1.5">
-                    <Mail className="w-4 h-4 text-slate-700" /> Automated Sequence Email (Step 1)
+              <div className="bg-white dark:bg-[#151B2B] border border-slate-200 dark:border-[#2A3241] rounded-2xl p-5 space-y-4 shadow-sm">
+                <div className="flex items-center justify-between border-b border-slate-100 dark:border-[#1E293B] pb-3">
+                  <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                    <Mail className="w-4 h-4 text-slate-700 dark:text-slate-300" /> Automated Sequence Email (Step 1)
                   </span>
                   <button
                     onClick={() => handleCopyToClipboard(`Subject: ${generatedCopy.emailObj.subject}\n\n${generatedCopy.emailObj.body}`, "email")}
-                    className="text-[11px] text-slate-900 font-medium hover:bg-slate-50 flex items-center gap-1 border border-slate-200 bg-white px-2.5 py-1 rounded shadow-sm transition cursor-pointer"
+                    className="text-[11px] text-slate-900 dark:text-slate-50 font-medium hover:bg-slate-50 dark:hover:bg-[#0F172A] flex items-center gap-1 border border-slate-200 dark:border-[#2A3241] bg-white dark:bg-[#151B2B] px-2.5 py-1 rounded shadow-sm transition cursor-pointer"
                   >
                     {copiedStatus["email"] ? <><Check className="w-3.5 h-3.5 text-emerald-500" /> Copied!</> : <><Copy className="w-3.5 h-3.5" /> Copy Message</>}
                   </button>
                 </div>
 
-                <div className="space-y-2 text-xs font-mono bg-slate-50 p-4 rounded-xl text-slate-700 border border-slate-100">
-                  <div><span className="text-slate-400 font-semibold block mb-1 text-[10px]">SUBJECT LINE:</span> <strong className="text-slate-950">{generatedCopy.emailObj.subject}</strong></div>
-                  <hr className="border-slate-200 my-2" />
+                <div className="space-y-2 text-xs font-mono bg-slate-50 dark:bg-[#1E293B] p-4 rounded-xl text-slate-700 dark:text-slate-300 border border-slate-100 dark:border-[#1E293B]">
+                  <div><span className="text-slate-400 dark:text-slate-500 font-semibold block mb-1 text-[10px]">SUBJECT LINE:</span> <strong className="text-slate-950">{generatedCopy.emailObj.subject}</strong></div>
+                  <hr className="border-slate-200 dark:border-[#2A3241] my-2" />
                   <div className="whitespace-pre-wrap leading-relaxed">{generatedCopy.emailObj.body}</div>
                 </div>
               </div>
 
               {/* LinkedIn Sequence messaging */}
-              <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <span className="text-xs font-semibold text-slate-800 flex items-center gap-1.5">
-                    <MessageSquare className="w-4 h-4 text-slate-700" /> LinkedIn Connection Request & Pitch (Step 2)
+              <div className="bg-white dark:bg-[#151B2B] border border-slate-200 dark:border-[#2A3241] rounded-2xl p-5 space-y-4 shadow-sm">
+                <div className="flex items-center justify-between border-b border-slate-100 dark:border-[#1E293B] pb-3">
+                  <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                    <MessageSquare className="w-4 h-4 text-slate-700 dark:text-slate-300" /> LinkedIn Connection Request & Pitch (Step 2)
                   </span>
                   <button
                     onClick={() => handleCopyToClipboard(`Connection Req: ${generatedCopy.linkedinMessageObj.connectionRequest}\n\nPitch: ${generatedCopy.linkedinMessageObj.followUpPitch}`, "linkedin")}
-                    className="text-[11px] text-slate-900 font-medium hover:bg-slate-50 flex items-center gap-1 border border-slate-200 bg-white px-2.5 py-1 rounded shadow-sm transition cursor-pointer"
+                    className="text-[11px] text-slate-900 dark:text-slate-50 font-medium hover:bg-slate-50 dark:hover:bg-[#0F172A] flex items-center gap-1 border border-slate-200 dark:border-[#2A3241] bg-white dark:bg-[#151B2B] px-2.5 py-1 rounded shadow-sm transition cursor-pointer"
                   >
                     {copiedStatus["linkedin"] ? <><Check className="w-3.5 h-3.5 text-emerald-500" /> Copied!</> : <><Copy className="w-3.5 h-3.5" /> Copy Block</>}
                   </button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
-                  <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 space-y-1.5">
-                    <span className="text-slate-400 font-semibold block text-[10px]">HI-LIMIT CONNECTION MESSAGE (300 CHARS):</span>
-                    <p className="text-slate-700 whitespace-pre-wrap leading-relaxed">{generatedCopy.linkedinMessageObj.connectionRequest}</p>
+                  <div className="bg-slate-50 dark:bg-[#1E293B] p-3 rounded-lg border border-slate-100 dark:border-[#1E293B] space-y-1.5">
+                    <span className="text-slate-400 dark:text-slate-500 font-semibold block text-[10px]">HI-LIMIT CONNECTION MESSAGE (300 CHARS):</span>
+                    <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">{generatedCopy.linkedinMessageObj.connectionRequest}</p>
                   </div>
-                  <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 space-y-1.5">
-                    <span className="text-slate-400 font-semibold block text-[10px]">DM DIRECT INTRO PITCH:</span>
-                    <p className="text-slate-700 whitespace-pre-wrap leading-relaxed font-semibold">{generatedCopy.linkedinmessageobj?.followupPitch || generatedCopy.linkedinMessageObj.followUpPitch}</p>
+                  <div className="bg-slate-50 dark:bg-[#1E293B] p-3 rounded-lg border border-slate-100 dark:border-[#1E293B] space-y-1.5">
+                    <span className="text-slate-400 dark:text-slate-500 font-semibold block text-[10px]">DM DIRECT INTRO PITCH:</span>
+                    <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed font-semibold">{generatedCopy.linkedinmessageobj?.followupPitch || generatedCopy.linkedinMessageObj.followUpPitch}</p>
                   </div>
                 </div>
               </div>
 
               {/* Follow up brief pitch */}
-              <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <span className="text-xs font-semibold text-slate-800 flex items-center gap-1.5">
-                    <Mail className="w-4 h-4 text-slate-700" /> Email Follow-Up Touch (Step 3 - Days Later)
+              <div className="bg-white dark:bg-[#151B2B] border border-slate-200 dark:border-[#2A3241] rounded-2xl p-5 space-y-4 shadow-sm">
+                <div className="flex items-center justify-between border-b border-slate-100 dark:border-[#1E293B] pb-3">
+                  <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                    <Mail className="w-4 h-4 text-slate-700 dark:text-slate-300" /> Email Follow-Up Touch (Step 3 - Days Later)
                   </span>
                   <button
                     onClick={() => handleCopyToClipboard(generatedCopy.followUpObj.body, "followup")}
-                    className="text-[11px] text-slate-900 font-medium hover:bg-slate-50 flex items-center gap-1 border border-slate-200 bg-white px-2.5 py-1 rounded shadow-sm transition cursor-pointer"
+                    className="text-[11px] text-slate-900 dark:text-slate-50 font-medium hover:bg-slate-50 dark:hover:bg-[#0F172A] flex items-center gap-1 border border-slate-200 dark:border-[#2A3241] bg-white dark:bg-[#151B2B] px-2.5 py-1 rounded shadow-sm transition cursor-pointer"
                   >
                     {copiedStatus["followup"] ? <><Check className="w-3.5 h-3.5 text-emerald-500" /> Copied!</> : <><Copy className="w-3.5 h-3.5 block" /> Copy Body</>}
                   </button>
                 </div>
 
-                <div className="text-xs font-mono bg-slate-50 p-4 rounded-xl text-slate-700 border border-slate-100 whitespace-pre-wrap leading-relaxed">
+                <div className="text-xs font-mono bg-slate-50 dark:bg-[#1E293B] p-4 rounded-xl text-slate-700 dark:text-slate-300 border border-slate-100 dark:border-[#1E293B] whitespace-pre-wrap leading-relaxed">
                   {generatedCopy.followUpObj.body}
                 </div>
               </div>

@@ -56,10 +56,10 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
   };
 
   return (
-    <div className="bg-slate-50 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans relative overflow-hidden" id="auth-root">
+    <div className="bg-slate-50 dark:bg-[#1E293B] min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans relative overflow-hidden" id="auth-root">
       <BackgroundMotionGraphics />
       
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl border border-slate-200 shadow-md relative z-10" id="auth-box">
+      <div className="max-w-md w-full space-y-8 bg-white dark:bg-[#151B2B] p-8 rounded-2xl border border-slate-200 dark:border-[#2A3241] shadow-md relative z-10" id="auth-box">
         {/* Logo and Headings */}
         <div className="text-center">
           <img 
@@ -68,13 +68,13 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
             className="mx-auto w-10 h-10 rounded-lg shadow-sm cursor-pointer hover:opacity-80 transition duration-200" 
             onClick={onBack} 
           />
-          <h2 className="mt-4 text-xl font-semibold text-slate-900 tracking-tight">
+          <h2 className="mt-4 text-xl font-semibold text-slate-900 dark:text-slate-50 tracking-tight">
             {view === "login" && "Welcome to SalesPilot AI"}
             {view === "register" && "Create your SDK Workspace"}
             {view === "forgot" && "Recover Security Credentials"}
             {view === "verify" && "Verify Security Access Key"}
           </h2>
-          <p className="mt-1.5 text-xs text-slate-400">
+          <p className="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
             {view === "login" && "Access your AI-powered SDR prospecting portal"}
             {view === "register" && "Start discovering high-growth manufacturing accounts"}
             {view === "forgot" && "Enter your email to receive a secure recovery code"}
@@ -83,7 +83,7 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
         </div>
 
         {alert && (
-          <div className={`p-3 rounded-lg text-xs font-semibold ${alert.type === "success" ? "bg-emerald-50 text-emerald-800 border border-emerald-100" : "bg-rose-50 text-rose-800 border border-rose-100"}`}>
+          <div className={`p-3 rounded-lg text-xs font-semibold ${alert.type === "success" ? "bg-emerald-50 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800" : "bg-rose-50 dark:bg-rose-900/40 text-rose-800 dark:text-rose-400 border border-rose-100 dark:border-rose-800"}`}>
             {alert.text}
           </div>
         )}
@@ -92,7 +92,7 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
         {view === "login" && (
           <form className="mt-6 space-y-4" onSubmit={handleLogin} id="form-login">
             <div className="space-y-1">
-              <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Login Role Preview (For Testing)</label>
+              <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Login Role Preview (For Testing)</label>
               <div className="grid grid-cols-3 gap-2 mt-1">
                 {(["Admin", "Team Member", "Viewer"] as const).map((r) => (
                   <button
@@ -111,7 +111,7 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
                         setEmail("viewer@company.com");
                       }
                     }}
-                    className={`text-center py-2 px-1 rounded-lg border text-xs font-semibold transition cursor-pointer ${role === r ? "bg-slate-900 border-slate-900 text-white" : "border-slate-200 hover:bg-slate-50 text-slate-500"}`}
+                    className={`text-center py-2 px-1 rounded-lg border text-xs font-semibold transition cursor-pointer ${role === r ? "bg-slate-900 border-slate-900 text-white" : "border-slate-200 dark:border-[#2A3241] hover:bg-slate-50 dark:hover:bg-[#0F172A] text-slate-500 dark:text-slate-400"}`}
                   >
                     {r}
                   </button>
@@ -121,15 +121,15 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
 
             <div className="space-y-3.5">
               <div>
-                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Corporate Email Address</label>
+                <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Corporate Email Address</label>
                 <div className="relative">
-                  <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Mail className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 pl-10 pr-4 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-900 focus:bg-white transition"
+                    className="w-full bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2.5 pl-10 pr-4 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-slate-900 focus:bg-white dark:bg-[#151B2B] transition"
                     placeholder="name@company.com"
                   />
                 </div>
@@ -137,7 +137,7 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Account Password</label>
+                  <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Account Password</label>
                   <button 
                     type="button" 
                     onClick={() => setView("forgot")} 
@@ -147,13 +147,13 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
                   </button>
                 </div>
                 <div className="relative">
-                  <Lock className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Lock className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 pl-10 pr-4 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-900 focus:bg-white transition"
+                    className="w-full bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2.5 pl-10 pr-4 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-slate-900 focus:bg-white dark:bg-[#151B2B] transition"
                     placeholder="••••••••"
                   />
                 </div>
@@ -169,7 +169,7 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
             </button>
 
             <div className="text-center pt-2">
-              <span className="text-xs text-slate-400">New to SalesPilot AI? </span>
+              <span className="text-xs text-slate-400 dark:text-slate-500">New to SalesPilot AI? </span>
               <button 
                 type="button" 
                 onClick={() => setView("register")} 
@@ -185,41 +185,41 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
           <form className="mt-6 space-y-4" onSubmit={handleRegister} id="form-register">
             <div className="space-y-3.5">
               <div>
-                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Professional Full Name</label>
+                <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Professional Full Name</label>
                 <div className="relative">
-                  <User className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <User className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 pl-10 pr-4 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-900 focus:bg-white transition"
+                    className="w-full bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2.5 pl-10 pr-4 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-slate-900 focus:bg-white dark:bg-[#151B2B] transition"
                     placeholder="Sachin Ram"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Corporate Email Address</label>
+                <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Corporate Email Address</label>
                 <div className="relative">
-                  <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Mail className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 pl-10 pr-4 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-900 focus:bg-white transition"
+                    className="w-full bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2.5 pl-10 pr-4 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-slate-900 focus:bg-white dark:bg-[#151B2B] transition"
                     placeholder="name@company.com"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Default Workspace Role</label>
+                <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Default Workspace Role</label>
                 <select 
                   value={role} 
                   onChange={(e) => setRole(e.target.value as any)}
-                  className="w-full mt-1 bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-3 text-xs text-slate-800 focus:outline-none focus:border-slate-900 focus:bg-white transition"
+                  className="w-full mt-1 bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2.5 px-3 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-900 focus:bg-white dark:bg-[#151B2B] transition"
                 >
                   <option value="Admin">Admin (Full Control)</option>
                   <option value="Team Member">Team Member (Editor)</option>
@@ -237,7 +237,7 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
             </button>
 
             <div className="text-center pt-2">
-              <span className="text-xs text-slate-400">Have an account already? </span>
+              <span className="text-xs text-slate-400 dark:text-slate-500">Have an account already? </span>
               <button 
                 type="button" 
                 onClick={() => setView("login")} 
@@ -252,15 +252,15 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
         {view === "forgot" && (
           <form className="mt-6 space-y-4" onSubmit={handleForgot} id="form-forgot">
             <div>
-              <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Account Recovery Email</label>
+              <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Account Recovery Email</label>
               <div className="relative">
-                <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Mail className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 pl-10 pr-4 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-900 focus:bg-white transition"
+                  className="w-full bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2.5 pl-10 pr-4 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-slate-900 focus:bg-white dark:bg-[#151B2B] transition"
                   placeholder="name@company.com"
                 />
               </div>
@@ -288,19 +288,19 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
         {view === "verify" && (
           <form className="mt-6 space-y-4" onSubmit={handleVerify} id="form-verify">
             <div className="text-center mb-4">
-              <p className="text-xs text-slate-400 leading-relaxed">We simulate a security token. Click the button below to complete verification.</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 leading-relaxed">We simulate a security token. Click the button below to complete verification.</p>
             </div>
 
             <div>
-              <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Enter 6-Digit Code</label>
+              <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Enter 6-Digit Code</label>
               <div className="relative">
-                <Key className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Key className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   maxLength={6}
                   placeholder="123456"
                   required
-                  className="w-full tracking-[1.5em] text-center font-mono bg-slate-50 border border-slate-200 rounded-lg py-2.5 pl-10 pr-4 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-900 transition"
+                  className="w-full tracking-[1.5em] text-center font-mono bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2.5 pl-10 pr-4 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-slate-900 transition"
                 />
               </div>
             </div>
@@ -325,11 +325,11 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
         )}
 
         {/* Back link */}
-        <div className="text-center mt-4 border-t border-slate-100 pt-4">
+        <div className="text-center mt-4 border-t border-slate-100 dark:border-[#1E293B] pt-4">
           <button 
             type="button" 
             onClick={onBack} 
-            className="text-xs text-slate-400 hover:text-slate-900 font-semibold transition cursor-pointer"
+            className="text-xs text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:text-slate-50 font-semibold transition cursor-pointer"
           >
             ← Back to Landing Information
           </button>

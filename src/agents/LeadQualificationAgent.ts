@@ -36,7 +36,7 @@ Return ONLY a valid JSON object with no markdown or extra text:
 }`;
 
       try {
-        const result = await generateJSON(prompt);
+        const result = await generateJSON(prompt, null, 500);
         if (result && typeof result.score === "number") {
           addLog(`AI scored "${company.name}": ${result.score}/100.`);
           return result as LeadScoreDetail;
