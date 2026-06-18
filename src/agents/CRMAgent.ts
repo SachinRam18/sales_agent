@@ -34,9 +34,28 @@ export class CRMAgent {
     addLog: (message: string) => void;
   }) {
     const { company, contacts, scoreDetail, addLog } = params;
-    
     // Duplicate detection check
-    const dupCheck = await duplicateDetectionAgent.checkDuplicate(company.name, company.website, addLog);
+    const dupCheck = await duplicateDetectionAgent.checkDuplicate(
+      company.name,
+      company.website,
+      addLog
+    );
+
+    addLog("Running CRM duplicate scans across established entities...");
+
+    // Normalize parameters
+    const companyName = company.name || "Unknown Company";
+    const industryStr = company.industry || "Unknown";
+    const countryStr = company.location || "Unknown";
+    const websiteStr = company.website || "";
+
+    let employeesCount = 0;
+    if (company.employees !== undefined && company.employees !== null) {
+      const parsed = Number(company.employees);
+      if (!isNaN(parsed)) {
+        employeesCount = Math.floor(parsed);
+      }
+    }
 
     let targetCompanyId: string;
     let targetCompany: any;
@@ -46,14 +65,14 @@ export class CRMAgent {
       addLog(`Syncing existing CRM record attributes for "${company.name}".`);
 
       const updatedNotes = (dupCheck.existingNotes || "") + "\nSynced from discovery agent request.";
-      
+
       // Update existing company
       await db.query(`
         UPDATE companies
         SET industry = $1, country = $2, employees = $3, website = $4, description = $5, revenue = $6, notes = $7
         WHERE id = $8
       `, [
-        company.industry, company.location, company.employees, company.website,
+        industryStr, countryStr, employeesCount, websiteStr,
         company.description, company.revenue, updatedNotes, targetCompanyId
       ]);
 
@@ -70,18 +89,18 @@ export class CRMAgent {
       ]);
 
       targetCompany = await db.getCompany(targetCompanyId);
-      await db.addActivity("crm_stored", `Synced existing CRM record attributes: "${company.name}"`, "sachinram6363@gmail.com", company.name);
+      await db.addActivity("crm_stored", `Synced existing CRM record attributes: "${companyName}"`, "sachinram6363@gmail.com", companyName);
     } else {
       // Create new company
       targetCompanyId = "comp-" + Date.now();
-      addLog(`No duplicate found. Importing fresh qualified lead "${company.name}" into CRM.`);
+      addLog(`No duplicate found. Importing fresh qualified lead "${companyName}" into CRM.`);
 
       await db.query(`
         INSERT INTO companies (id, name, industry, country, employees, website, description, revenue, notes)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       `, [
-        targetCompanyId, company.name, company.industry, company.location, company.employees,
-        company.website, company.description, company.revenue, company.notes || ""
+        targetCompanyId, companyName, industryStr, countryStr, employeesCount,
+        websiteStr, company.description, company.revenue, company.notes || ""
       ]);
 
       // Create new lead
@@ -110,8 +129,8 @@ export class CRMAgent {
       }
 
       targetCompany = await db.getCompany(targetCompanyId);
-      await db.addActivity("crm_stored", `Imported fresh qualified lead into CRM: "${company.name}"`, "sachinram6363@gmail.com", company.name);
-      await db.addNotification(`CRM Agent added newly qualified lead: ${company.name}`);
+      await db.addActivity("crm_stored", `Imported fresh qualified lead into CRM: "${companyName}"`, "sachinram6363@gmail.com", companyName);
+      await db.addNotification(`CRM Agent added newly qualified lead: ${companyName}`);
     }
 
     return targetCompany;

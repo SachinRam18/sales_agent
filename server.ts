@@ -191,13 +191,31 @@ app.all("/api/search-leads", async (req, res) => {
 
     // Agent 3: Lead Qualification Agent
     const icps = await db.getICPs();
-    const activeIcp = icpId ? icps.find(i => i.id === icpId) : icps[0];
+    const presetIcp = (icpId && icpId !== "") ? icps.find(i => i.id === icpId) : undefined;
+
+    // Merge preset values with the user-selected parameters from the request, ensuring UI inputs override DB presets.
+    const activeIcp = {
+      ...(presetIcp || {}),
+      industry: industry || presetIcp?.industry || "Manufacturing",
+      country: country || presetIcp?.country || "Germany",
+      companySize: companySize || presetIcp?.companySize || "200-500",
+      revenueRange: revenueRange || presetIcp?.revenueRange || "> $10M",
+      keywords: keywords !== undefined ? keywords : (presetIcp?.keywords || "")
+    };
+
+    console.log("[LeadQualificationAgent Debug] Pre-Scoring Parameters:");
+    console.log("- Active ICP Industry:", activeIcp.industry);
+    console.log("- Active ICP Country:", activeIcp.country);
+    console.log("- Active ICP Keywords:", activeIcp.keywords);
+    console.log("- User-selected Industry:", industry);
+    console.log("- User-selected Country:", country);
+    console.log("- User-selected Keywords:", keywords);
 
     const scoredResults: any[] = [];
     for (const company of enrichedCompanies) {
       const scoreObj = await leadQualificationAgent.scoreLead(
         company,
-        activeIcp || { industry, country, companySize, revenueRange, keywords },
+        activeIcp,
         (msg) => addLog("Lead Qualification Agent", msg)
       );
 
