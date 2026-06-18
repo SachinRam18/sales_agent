@@ -19,7 +19,11 @@ interface DiscoveredLead {
   website: string;
   location: string;
   revenue: string;
-  employees: number;
+  employees: number | null;
+  employeeConfidence?: "HIGH" | "MEDIUM" | "LOW";
+  employeeEvidence?: string;
+  employeeSource?: "EMPLOYEE_EVIDENCE" | "CUSTOMER_HEURISTIC" | "SIZE_HEURISTIC" | "UNKNOWN";
+  companySize?: string;
   description: string;
   technologies: string;
   score: number;
@@ -31,6 +35,15 @@ interface DiscoveredLead {
     techMatch: number;
     locationMatch: number;
     explanation: string;
+    scoreBreakdown?: {
+      industry: number;
+      industryRelevance: number;
+      companyType: number;
+      employeeFit: number;
+      technology: number;
+      country: number;
+      contacts: number;
+    };
   };
   contacts: Array<{
     name: string;
@@ -39,6 +52,10 @@ interface DiscoveredLead {
     email: string;
     phone: string;
   }>;
+  discoverySources?: string[];
+  discoveryConfidence?: number;
+  discoveryConfidenceLevel?: "Low" | "Medium" | "High";
+  discoverySourceCount?: number;
 }
 
 interface LeadDiscoveryProps {
@@ -235,7 +252,10 @@ export default function LeadDiscovery({ onLeadSynced, userRole }: LeadDiscoveryP
                 <input
                   type="text"
                   value={industry}
-                  onChange={(e) => setIndustry(e.target.value)}
+                  onChange={(e) => {
+                    setIndustry(e.target.value);
+                    setSelectedIcpId("");
+                  }}
                   placeholder="e.g. Manufacturing, Software, Logistics"
                   required
                   className="w-full bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-slate-900 focus:bg-white dark:bg-[#151B2B]"
@@ -247,7 +267,10 @@ export default function LeadDiscovery({ onLeadSynced, userRole }: LeadDiscoveryP
                 <input
                   type="text"
                   value={country}
-                  onChange={(e) => setCountry(e.target.value)}
+                  onChange={(e) => {
+                    setCountry(e.target.value);
+                    setSelectedIcpId("");
+                  }}
                   placeholder="e.g. Germany, United States"
                   required
                   className="w-full bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-slate-900 focus:bg-white dark:bg-[#151B2B]"
@@ -260,7 +283,10 @@ export default function LeadDiscovery({ onLeadSynced, userRole }: LeadDiscoveryP
                   <input
                     type="text"
                     value={companySize}
-                    onChange={(e) => setCompanySize(e.target.value)}
+                    onChange={(e) => {
+                      setCompanySize(e.target.value);
+                      setSelectedIcpId("");
+                    }}
                     placeholder="e.g. 200-500"
                     required
                     className="w-full bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-slate-900 focus:bg-white dark:bg-[#151B2B]"
@@ -271,7 +297,10 @@ export default function LeadDiscovery({ onLeadSynced, userRole }: LeadDiscoveryP
                   <input
                     type="text"
                     value={revenueRange}
-                    onChange={(e) => setRevenueRange(e.target.value)}
+                    onChange={(e) => {
+                      setRevenueRange(e.target.value);
+                      setSelectedIcpId("");
+                    }}
                     placeholder="e.g. > $10M"
                     required
                     className="w-full bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-slate-900 focus:bg-white dark:bg-[#151B2B]"
@@ -283,7 +312,10 @@ export default function LeadDiscovery({ onLeadSynced, userRole }: LeadDiscoveryP
                 <label className="text-[10px] font-semibold text-slate-405 uppercase tracking-wider block mb-1 font-sans">Crawler Directives / Keywords</label>
                 <textarea
                   value={keywords}
-                  onChange={(e) => setKeywords(e.target.value)}
+                  onChange={(e) => {
+                    setKeywords(e.target.value);
+                    setSelectedIcpId("");
+                  }}
                   placeholder="e.g. industrial automated setups, high torque tools"
                   rows={2}
                   className="w-full bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-slate-900 focus:bg-white dark:bg-[#151B2B] resize-none"
@@ -400,10 +432,41 @@ export default function LeadDiscovery({ onLeadSynced, userRole }: LeadDiscoveryP
                               </a>
                             </div>
                             <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-normal truncate mt-0.5">{lead.website}</span>
+                            {lead.discoverySources && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {lead.discoverySources.map((src, idx) => (
+                                  <span key={idx} className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-450 text-[9px] px-1 py-0.5 rounded font-medium border border-slate-200 dark:border-slate-700">
+                                    {src}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                            {lead.discoveryConfidence !== undefined && (
+                              <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1.5 flex items-center gap-1.5">
+                                <span>Conf: <strong>{lead.discoveryConfidence}%</strong></span>
+                                <span className={`px-1 py-0.5 rounded text-[9px] font-semibold border ${
+                                  lead.discoveryConfidenceLevel === "High" 
+                                    ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900" 
+                                    : lead.discoveryConfidenceLevel === "Medium"
+                                    ? "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-400 border-amber-100 dark:border-amber-900"
+                                    : "bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-400 border-rose-100 dark:border-rose-900"
+                                }`}>
+                                  {lead.discoveryConfidenceLevel}
+                                </span>
+                              </div>
+                            )}
                           </td>
                           <td className="py-3.5 pr-2 text-[11px] text-slate-600 dark:text-slate-400 space-y-0.5">
                             <div>Location: <strong className="text-slate-800 dark:text-slate-200 font-medium">{lead.location}</strong></div>
-                            <div>Employees: <strong className="text-slate-800 dark:text-slate-200 font-medium">{lead.employees}</strong></div>
+                            {lead.employeeSource === "EMPLOYEE_EVIDENCE" || lead.employeeConfidence === "HIGH" ? (
+                              <div>Employees: <strong className="text-slate-800 dark:text-slate-200 font-medium">{lead.employees}</strong> <span className="text-slate-400 dark:text-slate-500">| Confidence: High</span></div>
+                            ) : lead.employeeSource === "CUSTOMER_HEURISTIC" || lead.employeeConfidence === "MEDIUM" ? (
+                              <div>Estimated Company Size: <strong className="text-slate-800 dark:text-slate-200 font-medium">{lead.companySize}</strong> <span className="text-slate-400 dark:text-slate-500">| Confidence: Medium</span></div>
+                            ) : lead.employeeSource === "SIZE_HEURISTIC" || lead.employeeConfidence === "LOW" ? (
+                              <div>Estimated Company Size: <strong className="text-slate-800 dark:text-slate-200 font-medium">{lead.companySize}</strong> <span className="text-slate-400 dark:text-slate-500">| Confidence: Low</span></div>
+                            ) : (
+                              <div>Employees: <strong className="text-slate-800 dark:text-slate-200 font-medium">{lead.employees || "Unknown"}</strong></div>
+                            )}
                             <div>Tech: <strong className="text-teal-600 text-[10px] font-mono bg-teal-50 px-1 py-0.5 rounded">{lead.technologies}</strong></div>
                           </td>
                           <td className="py-3.5 pr-2 text-[10px] text-slate-500 dark:text-slate-400 space-y-1">
@@ -414,10 +477,43 @@ export default function LeadDiscovery({ onLeadSynced, userRole }: LeadDiscoveryP
                               </div>
                             ))}
                           </td>
-                          <td className="py-3.5 pr-2 text-center">
-                            <span className={`px-2 py-0.5 rounded font-semibold block text-center max-w-[50px] mx-auto text-[10px] ${lead.score >= 90 ? "bg-emerald-50 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800" : "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-[#2A3241]"}`}>
-                              {lead.score}
-                            </span>
+                          <td className="py-3.5 pr-2 text-center relative">
+                            <div className="relative group inline-block">
+                              <span className={`px-2 py-0.5 rounded font-semibold block text-center max-w-[50px] mx-auto text-[10px] cursor-help ${lead.score >= 90 ? "bg-emerald-50 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800" : "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-[#2A3241]"}`}>
+                                {lead.score}
+                              </span>
+                              {lead.scoreDetail && lead.scoreDetail.scoreBreakdown && (
+                                <div className="absolute right-0 bottom-full mb-2 hidden group-hover:block w-48 bg-slate-900 dark:bg-slate-800 text-white text-[10px] rounded-lg p-3 shadow-xl z-50 border border-slate-700 pointer-events-none text-left">
+                                  <div className="font-bold border-b border-slate-700 pb-1 mb-1 text-center uppercase tracking-wider text-slate-200">Score Breakdown</div>
+                                  <div className="space-y-1 font-mono text-slate-300">
+                                    <div className="flex justify-between gap-4">
+                                      <span>Industry Fit:</span>
+                                      <span>{lead.scoreDetail.scoreBreakdown.industry}/30</span>
+                                    </div>
+                                    <div className="flex justify-between gap-4">
+                                      <span>Company Type:</span>
+                                      <span>{lead.scoreDetail.scoreBreakdown.companyType}/15</span>
+                                    </div>
+                                    <div className="flex justify-between gap-4">
+                                      <span>Employee Fit:</span>
+                                      <span>{lead.scoreDetail.scoreBreakdown.employeeFit}/10</span>
+                                    </div>
+                                    <div className="flex justify-between gap-4">
+                                      <span>Technology Fit:</span>
+                                      <span>{lead.scoreDetail.scoreBreakdown.technology}/25</span>
+                                    </div>
+                                    <div className="flex justify-between gap-4">
+                                      <span>Country Match:</span>
+                                      <span>{lead.scoreDetail.scoreBreakdown.country}/10</span>
+                                    </div>
+                                    <div className="flex justify-between gap-4">
+                                      <span>Contact Quality:</span>
+                                      <span>{lead.scoreDetail.scoreBreakdown.contacts}/10</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                           </td>
                           <td className="py-3.5 text-right font-medium">
                             {syncedIds[lead.id] ? (

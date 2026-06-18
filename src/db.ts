@@ -464,6 +464,21 @@ export async function getCompany(id: string) {
 
 export async function saveCompany(company: any) {
   if (useSim) return dbInstance.saveCompany(company);
+
+  // Normalize parameters to avoid database constraint violations
+  const companyName = company.name || "Unknown Company";
+  const industryStr = company.industry || "Unknown";
+  const countryStr = company.location || company.country || "Unknown";
+  const websiteStr = company.website || "";
+
+  let employeesCount = 0;
+  if (company.employees !== undefined && company.employees !== null) {
+    const parsed = Number(company.employees);
+    if (!isNaN(parsed)) {
+      employeesCount = Math.floor(parsed);
+    }
+  }
+
   // Upsert company
   const exists = await pool.query("SELECT 1 FROM companies WHERE id = $1", [company.id]);
   
@@ -473,16 +488,16 @@ export async function saveCompany(company: any) {
       SET name = $1, industry = $2, country = $3, employees = $4, website = $5, description = $6, revenue = $7, notes = $8
       WHERE id = $9
     `, [
-      company.name, company.industry, company.location || company.country, company.employees,
-      company.website, company.description, company.revenue, company.notes, company.id
+      companyName, industryStr, countryStr, employeesCount,
+      websiteStr, company.description, company.revenue, company.notes, company.id
     ]);
   } else {
     await pool.query(`
       INSERT INTO companies (id, name, industry, country, employees, website, description, revenue, notes)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
     `, [
-      company.id, company.name, company.industry, company.location || company.country, company.employees,
-      company.website, company.description, company.revenue, company.notes
+      company.id, companyName, industryStr, countryStr, employeesCount,
+      websiteStr, company.description, company.revenue, company.notes
     ]);
   }
 
