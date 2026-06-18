@@ -39,6 +39,11 @@ interface DiscoveredLead {
     email: string;
     phone: string;
   }>;
+  companySize?: string;
+  employeeConfidence?: string;
+  employeeSource?: string;
+  discoveryConfidence?: number;
+  discoveryConfidenceLevel?: string;
 }
 
 interface LeadDiscoveryProps {
@@ -54,6 +59,7 @@ type ChatMessage = {
   parsedData?: any;
   results?: DiscoveredLead[];
   syncedIds?: Record<string, boolean>;
+  logs?: Array<{ agent: string; message: string; timestamp: string }>;
 };
 
 export default function LeadDiscovery({ onLeadSynced, userRole }: LeadDiscoveryProps) {
@@ -149,7 +155,7 @@ export default function LeadDiscovery({ onLeadSynced, userRole }: LeadDiscoveryP
       // 3. Display Results
       setMessages(prev => prev.map(m => 
         m.id === newMsgId + "-agent" 
-          ? { ...m, type: "results", content: "Discovery completed.", results: searchData.results || [], syncedIds: {} } 
+          ? { ...m, type: "results", content: "Discovery completed.", results: searchData.results || [], logs: searchData.logs || [], syncedIds: {} } 
           : m
       ));
 
@@ -308,6 +314,20 @@ export default function LeadDiscovery({ onLeadSynced, userRole }: LeadDiscoveryP
                   </div>
                 )}
 
+                {/* Agent Logs Console */}
+                {msg.logs && msg.logs.length > 0 && (
+                  <div className="bg-[#0F172A] text-slate-200 rounded-xl p-3.5 border border-slate-800 w-full max-w-[800px] font-mono text-[10px] space-y-1.5 max-h-[160px] overflow-y-auto mt-2 shadow-inner">
+                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Agent Telemetry Logs</p>
+                    {msg.logs.map((log, idx) => (
+                      <div key={idx} className="flex gap-2 leading-relaxed">
+                        <span className="text-slate-500 shrink-0">[{log.timestamp}]</span>
+                        <span className="text-indigo-400 font-semibold shrink-0">[{log.agent}]:</span>
+                        <span className="text-slate-300">{log.message}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 {/* Results Table inside Agent Bubble */}
                 {msg.type === 'results' && msg.results && (
                   <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-xl shadow-sm overflow-hidden w-full max-w-[800px] mt-2">
@@ -342,9 +362,33 @@ export default function LeadDiscovery({ onLeadSynced, userRole }: LeadDiscoveryP
                                     </a>
                                   </div>
                                   <span className="text-[10px] text-slate-500 block font-normal truncate mt-0.5">{lead.website}</span>
+                                  {lead.discoveryConfidence !== undefined && (
+                                    <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1.5 flex items-center gap-1.5">
+                                      <span>Conf: <strong>{lead.discoveryConfidence}%</strong></span>
+                                      <span className={`px-1 py-0.5 rounded text-[9px] font-semibold border ${
+                                        lead.discoveryConfidenceLevel === "High" 
+                                          ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900" 
+                                          : lead.discoveryConfidenceLevel === "Medium"
+                                          ? "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-400 border-amber-100 dark:border-amber-900"
+                                          : "bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-400 border-rose-100 dark:border-rose-900"
+                                      }`}>
+                                        {lead.discoveryConfidenceLevel}
+                                      </span>
+                                    </div>
+                                  )}
                                 </td>
-                                <td className="py-3 px-4 text-[11px] text-slate-600 dark:text-slate-400">
-                                  <div>{lead.location} • {lead.employees} emp</div>
+                                <td className="py-3 px-4 text-[11px] text-slate-600 dark:text-slate-400 space-y-0.5">
+                                  <div>Location: <strong className="text-slate-800 dark:text-slate-200 font-medium">{lead.location}</strong></div>
+                                  {lead.employeeSource === "EMPLOYEE_EVIDENCE" || lead.employeeConfidence === "HIGH" || lead.employeeConfidence === "High" ? (
+                                    <div>Employees: <strong className="text-slate-800 dark:text-slate-200 font-medium">{lead.employees}</strong> <span className="text-slate-400 dark:text-slate-500">| Confidence: High</span></div>
+                                  ) : lead.employeeSource === "CUSTOMER_HEURISTIC" || lead.employeeConfidence === "MEDIUM" || lead.employeeConfidence === "Medium" ? (
+                                    <div>Estimated Company Size: <strong className="text-slate-800 dark:text-slate-200 font-medium">{lead.companySize}</strong> <span className="text-slate-400 dark:text-slate-500">| Confidence: Medium</span></div>
+                                  ) : lead.employeeSource === "SIZE_HEURISTIC" || lead.employeeConfidence === "LOW" || lead.employeeConfidence === "Low" ? (
+                                    <div>Estimated Company Size: <strong className="text-slate-800 dark:text-slate-200 font-medium">{lead.companySize}</strong> <span className="text-slate-400 dark:text-slate-500">| Confidence: Low</span></div>
+                                  ) : (
+                                    <div>Employees: <strong className="text-slate-800 dark:text-slate-200 font-medium">{lead.employees || "Unknown"}</strong></div>
+                                  )}
+                                  <div>Tech: <strong className="text-teal-600 text-[10px] font-mono bg-teal-50 px-1 py-0.5 rounded">{lead.technologies}</strong></div>
                                 </td>
                                 <td className="py-3 px-4 text-center">
                                   <span className={`px-2 py-0.5 rounded font-semibold inline-block text-[10px] ${lead.score >= 90 ? "bg-emerald-50 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800" : "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-[#2A3241]"}`}>

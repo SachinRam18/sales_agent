@@ -7,6 +7,23 @@ import { bingProvider } from "./BingProvider";
 import { IndustryProfiles, normalizeIndustry } from "../config/IndustryProfiles";
 import { IndustryIntentEngine } from "./IndustryIntentEngine";
 
+export function normalizeCountryName(c: string): string {
+  const clean = c.toLowerCase().trim();
+  if (clean === "usa" || clean === "us" || clean === "united states" || clean === "united states of america" || clean === "america") {
+    return "usa";
+  }
+  if (clean === "uk" || clean === "united kingdom" || clean === "great britain" || clean === "england") {
+    return "uk";
+  }
+  if (clean === "india" || clean === "in") {
+    return "india";
+  }
+  if (clean === "germany" || clean === "de" || clean === "deutschland") {
+    return "germany";
+  }
+  return clean;
+}
+
 export const DIRECTORY_MAPPINGS: Record<string, string> = {
   "linkedin.com": "LinkedIn",
   "g2.com": "G2",
@@ -226,9 +243,15 @@ export class SearchService {
       pooledResults.push(...list);
     });
 
-    // SIMULATED FALLBACK DB (Runs if both search providers returned 0 results due to CAPTCHAs/403 blocks)
-    if (pooledResults.length === 0) {
-      console.log(`[SearchService] ⚠️ Both providers returned 0 results (likely rate limited). Activating local search simulator...`);
+    const reqCountry = normalizeCountryName(country);
+    const hasCountryMatch = pooledResults.some(r => {
+      const loc = normalizeCountryName(r.location || "");
+      return loc.includes(reqCountry) || reqCountry.includes(loc) || loc === reqCountry;
+    });
+
+    // SIMULATED FALLBACK DB (Runs if both search providers returned 0 results, or if no results match the requested country)
+    if (pooledResults.length === 0 || !hasCountryMatch) {
+      console.log(`[SearchService] ⚠️ No results matching country "${country}" found in search pool. Activating local search simulator...`);
       const qLower = queries.join(" ").toLowerCase();
       const mockDb: SearchResult[] = [];
 

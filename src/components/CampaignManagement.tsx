@@ -21,6 +21,7 @@ interface CampaignManagementProps {
 
 export default function CampaignManagement({ userRole }: CampaignManagementProps) {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [icpProfiles, setIcpProfiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Form properties
@@ -48,6 +49,11 @@ export default function CampaignManagement({ userRole }: CampaignManagementProps
 
   useEffect(() => {
     fetchCampaigns();
+    // Fetch Saved ICPs to populate audience selection dropdown dynamically
+    fetch("/api/icp")
+      .then((r) => r.json())
+      .then((data) => setIcpProfiles(data))
+      .catch((e) => console.error("Error fetching ICP profiles for campaigns:", e));
   }, []);
 
   const handleCreateCampaign = async (e: React.FormEvent) => {
@@ -147,8 +153,15 @@ export default function CampaignManagement({ userRole }: CampaignManagementProps
                   className="w-full bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-slate-900"
                 >
                   <option value="">-- Select Target Profile --</option>
-                  <option value="German Manufacturing Leader">German Manufacturing Leader (Medium/Large Enterprise)</option>
-                  <option value="US SaaS Series A/B">US SaaS Series A/B (High Tech Growth)</option>
+                  {icpProfiles.map((p) => (
+                    <option key={p.id} value={p.name}>{p.name}</option>
+                  ))}
+                  {icpProfiles.length === 0 && (
+                    <>
+                      <option value="German Manufacturing Leader">German Manufacturing Leader (Medium/Large Enterprise)</option>
+                      <option value="US SaaS Series A/B">US SaaS Series A/B (High Tech Growth)</option>
+                    </>
+                  )}
                 </select>
               </div>
 
@@ -210,19 +223,19 @@ export default function CampaignManagement({ userRole }: CampaignManagementProps
                     <div className="grid grid-cols-4 gap-2 text-center text-xs font-mono uppercase bg-slate-50 dark:bg-[#1E293B] p-2.5 rounded-lg border border-slate-100 dark:border-[#1E293B]">
                       <div>
                         <span className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold block uppercase font-sans">Sent Count</span>
-                        <strong className="text-slate-850 font-mono text-sm">{camp.sentCount || 12}</strong>
+                        <strong className="text-slate-850 font-mono text-sm">{camp.sentCount !== undefined ? camp.sentCount : 0}</strong>
                       </div>
                       <div>
                         <span className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold block uppercase font-sans">Open Rate</span>
-                        <strong className="text-slate-900 dark:text-slate-50 font-mono text-sm">{camp.openRate ? `${camp.openRate}%` : "55.5%"}</strong>
+                        <strong className="text-slate-900 dark:text-slate-50 font-mono text-sm">{camp.openRate !== undefined ? `${camp.openRate}%` : "0%"}</strong>
                       </div>
                       <div>
                         <span className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold block uppercase font-sans">Reply Rate</span>
-                        <strong className="text-slate-900 dark:text-slate-50 font-mono text-sm">{camp.replyRate ? `${camp.replyRate}%` : "24.5%"}</strong>
+                        <strong className="text-slate-900 dark:text-slate-50 font-mono text-sm">{camp.replyRate !== undefined ? `${camp.replyRate}%` : "0%"}</strong>
                       </div>
                       <div>
                         <span className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold block uppercase font-sans">Conversions</span>
-                        <strong className="text-emerald-700 font-mono text-sm">{camp.conversionRate ? `${camp.conversionRate}%` : "11.2%"}</strong>
+                        <strong className="text-emerald-700 font-mono text-sm">{camp.conversionRate !== undefined ? `${camp.conversionRate}%` : "0%"}</strong>
                       </div>
                     </div>
                   </div>

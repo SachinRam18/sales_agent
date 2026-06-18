@@ -1,4 +1,5 @@
 import { IndustryProfiles, normalizeIndustry } from "../config/IndustryProfiles";
+import { normalizeCountryName } from "./LeadDiscoveryAgent";
 
 export interface LeadScoreDetail {
   score: number;
@@ -136,9 +137,9 @@ export class LeadQualificationAgent {
 
     // 6. Country Match (10%)
     let countryScore = 0;
-    const compLoc = (company.location || "").toLowerCase();
-    const icpCtr = (icp?.country || "").toLowerCase();
-    if (compLoc && icpCtr && (compLoc.includes(icpCtr) || icpCtr.includes(compLoc))) {
+    const compLoc = normalizeCountryName(company.location || "");
+    const icpCtr = normalizeCountryName(icp?.country || "");
+    if (compLoc && icpCtr && (compLoc.includes(icpCtr) || icpCtr.includes(compLoc) || compLoc === icpCtr)) {
       countryScore = weights.geography;
     }
 

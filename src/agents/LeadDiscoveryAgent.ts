@@ -61,6 +61,23 @@ function parseCompanySizeRange(sizeStr: string): { min: number; max: number } {
   return { min: 0, max: Infinity };
 }
 
+export function normalizeCountryName(c: string): string {
+  const clean = c.toLowerCase().trim();
+  if (clean === "usa" || clean === "us" || clean === "united states" || clean === "united states of america" || clean === "america") {
+    return "usa";
+  }
+  if (clean === "uk" || clean === "united kingdom" || clean === "great britain" || clean === "england") {
+    return "uk";
+  }
+  if (clean === "india" || clean === "in") {
+    return "india";
+  }
+  if (clean === "germany" || clean === "de" || clean === "deutschland") {
+    return "germany";
+  }
+  return clean;
+}
+
 export class LeadDiscoveryAgent {
   async discover(params: {
     industry: string;
@@ -136,21 +153,21 @@ export class LeadDiscoveryAgent {
         }
 
         // 2. Country / Location Validation Gate
-        const reqCountry = country.toLowerCase().trim();
-        const detectedCountry = (enriched.location || res.location || "").toLowerCase().trim();
+        const reqCountry = normalizeCountryName(country);
+        const detectedCountry = normalizeCountryName(enriched.location || res.location || "");
 
         let countryMatches = false;
         if (detectedCountry && reqCountry) {
-          countryMatches = (detectedCountry.includes(reqCountry) || reqCountry.includes(detectedCountry));
+          countryMatches = (detectedCountry.includes(reqCountry) || reqCountry.includes(detectedCountry) || detectedCountry === reqCountry);
         } else {
           countryMatches = true; // Default accept if no location info
         }
 
         const locationDecision = countryMatches ? "ACCEPTED" : "REJECTED";
-        addLog(`[Location Validation] Requested country: ${country}, Detected country: ${detectedCountry || "unknown"}. Decision: ${locationDecision}`);
+        addLog(`[Location Validation] Requested country: ${country}, Detected country: ${enriched.location || res.location || "unknown"}. Decision: ${locationDecision}`);
 
         if (!countryMatches) {
-          addLog(`Skipping candidate "${profile.companyName}" due to country mismatch (Requested: ${country}, Detected: ${detectedCountry || "unknown"}).`);
+          addLog(`Skipping candidate "${profile.companyName}" due to country mismatch (Requested: ${country}, Detected: ${enriched.location || res.location || "unknown"}).`);
           continue;
         }
         
