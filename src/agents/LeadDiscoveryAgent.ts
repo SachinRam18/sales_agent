@@ -128,7 +128,7 @@ export class LeadDiscoveryAgent {
       for (let i = 0; i < validatedProfiles.length; i++) {
         const { res, profile } = validatedProfiles[i];
         addLog(`Enriching candidate: "${profile.companyName}" (${res.website})`);
-        const enriched = await websiteEnrichmentService.enrich(res.website, profile);
+        const enriched = await websiteEnrichmentService.enrich(res.website, profile, country);
 
         // 1. Company Size Validation Gate
         const reqRange = parseCompanySizeRange(companySize);

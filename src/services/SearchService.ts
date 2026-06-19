@@ -4,6 +4,7 @@ import { mojeekProvider } from "./MojeekProvider";
 import { googleProvider } from "./GoogleProvider";
 import { qwantProvider } from "./QwantProvider";
 import { bingProvider } from "./BingProvider";
+import { serperProvider } from "./SerperProvider";
 import { IndustryProfiles, normalizeIndustry } from "../config/IndustryProfiles";
 import { IndustryIntentEngine } from "./IndustryIntentEngine";
 
@@ -155,93 +156,114 @@ export class SearchService {
     const queries = this.generateQueryVariants(industry, country, keywords);
     let pooledResults: SearchResult[] = [];
 
-    const searchPromises = queries.map(async (query) => {
-      try {
-        console.log(`[SearchService] Querying providers for query: "${query}"`);
-        const [ddgRes, mojeekRes, googleRes, qwantRes, bingRes, dirRes] = await Promise.all([
-          this.primaryProvider.search(query).catch(() => [] as SearchResult[]),
-          this.fallbackProvider.search(query).catch(() => [] as SearchResult[]),
-          googleProvider.search(query).catch(() => [] as SearchResult[]),
-          qwantProvider.search(query).catch(() => [] as SearchResult[]),
-          bingProvider.search(query).catch(() => [] as SearchResult[]),
-          bingProvider.search("site:linkedin.com/company OR site:g2.com OR site:clutch.co " + query).catch(() => [] as SearchResult[])
-        ]);
-
-        const merged: SearchResult[] = [];
-
-        // Helper to merge results into merged list
-        const mergeResult = (r: SearchResult, sourceName: string) => {
-          const directorySearchResult = this.parseDirectoryListing(r.website, r.name, r.snippet);
-          const parsed = directorySearchResult || {
+    if (process.env.SERPER_API_KEY) {
+      console.log(`[SearchService] SERPER_API_KEY detected. Using geolocated SerperProvider.`);
+      const searchPromises = queries.map(async (query) => {
+        try {
+          const results = await serperProvider.searchWithCountry(query, country);
+          return results.map(r => ({
             ...r,
-            sources: [sourceName],
-            sourceUrls: [r.website],
+            sources: r.sources || ["Serper"],
+            sourceUrls: r.sourceUrls || [r.website],
             matchedQuery: query
-          };
+          }));
+        } catch (err: any) {
+          console.warn(`[SearchService] Serper search failed for query "${query}": ${err.message}`);
+          return [];
+        }
+      });
+      const resultsLists = await Promise.all(searchPromises);
+      resultsLists.forEach(list => {
+        pooledResults.push(...list);
+      });
+    } else {
+      const searchPromises = queries.map(async (query) => {
+        try {
+          console.log(`[SearchService] Querying providers for query: "${query}"`);
+          const [ddgRes, mojeekRes, googleRes, qwantRes, bingRes, dirRes] = await Promise.all([
+            this.primaryProvider.search(query).catch(() => [] as SearchResult[]),
+            this.fallbackProvider.search(query).catch(() => [] as SearchResult[]),
+            googleProvider.search(query).catch(() => [] as SearchResult[]),
+            qwantProvider.search(query).catch(() => [] as SearchResult[]),
+            bingProvider.search(query).catch(() => [] as SearchResult[]),
+            bingProvider.search("site:linkedin.com/company OR site:g2.com OR site:clutch.co " + query).catch(() => [] as SearchResult[])
+          ]);
 
-          const resDomain = this.getRootDomain(parsed.website);
-          const existing = merged.find(m => this.getRootDomain(m.website) === resDomain);
-          if (existing) {
-            const newSrc = parsed.sources?.[0] || sourceName;
-            if (existing.sources && !existing.sources.includes(newSrc)) {
-              existing.sources.push(newSrc);
-            }
-            const newUrl = parsed.sourceUrls?.[0] || r.website;
-            if (existing.sourceUrls && !existing.sourceUrls.includes(newUrl)) {
-              existing.sourceUrls.push(newUrl);
-            }
-          } else {
-            merged.push(parsed);
-          }
-        };
+          const merged: SearchResult[] = [];
 
-        // 1. Process DuckDuckGo results
-        ddgRes.forEach(r => mergeResult(r, "DuckDuckGo"));
+          // Helper to merge results into merged list
+          const mergeResult = (r: SearchResult, sourceName: string) => {
+            const directorySearchResult = this.parseDirectoryListing(r.website, r.name, r.snippet);
+            const parsed = directorySearchResult || {
+              ...r,
+              sources: [sourceName],
+              sourceUrls: [r.website],
+              matchedQuery: query
+            };
 
-        // 2. Process Mojeek results
-        mojeekRes.forEach(r => mergeResult(r, "Mojeek"));
-
-        // 3. Process Google results
-        googleRes.forEach(r => mergeResult(r, "Google"));
-
-        // 4. Process Qwant results
-        qwantRes.forEach(r => mergeResult(r, "Qwant"));
-
-        // 5. Process Bing results
-        bingRes.forEach(r => mergeResult(r, "Bing"));
-
-        // 6. Process Directory search results
-        dirRes.forEach(r => {
-          const directorySearchResult = this.parseDirectoryListing(r.website, r.name, r.snippet);
-          if (directorySearchResult) {
-            const resDomain = this.getRootDomain(directorySearchResult.website);
+            const resDomain = this.getRootDomain(parsed.website);
             const existing = merged.find(m => this.getRootDomain(m.website) === resDomain);
             if (existing) {
-              const newSrc = directorySearchResult.sources?.[0] || "Directory";
+              const newSrc = parsed.sources?.[0] || sourceName;
               if (existing.sources && !existing.sources.includes(newSrc)) {
                 existing.sources.push(newSrc);
               }
-              const newUrl = directorySearchResult.sourceUrls?.[0] || r.website;
+              const newUrl = parsed.sourceUrls?.[0] || r.website;
               if (existing.sourceUrls && !existing.sourceUrls.includes(newUrl)) {
                 existing.sourceUrls.push(newUrl);
               }
             } else {
-              merged.push(directorySearchResult);
+              merged.push(parsed);
             }
-          }
-        });
+          };
 
-        return merged;
-      } catch (err: any) {
-        console.warn(`[SearchService] Parallel search failed for query "${query}": ${err.message}`);
-        return [];
-      }
-    });
+          // 1. Process DuckDuckGo results
+          ddgRes.forEach(r => mergeResult(r, "DuckDuckGo"));
 
-    const resultsLists = await Promise.all(searchPromises);
-    resultsLists.forEach(list => {
-      pooledResults.push(...list);
-    });
+          // 2. Process Mojeek results
+          mojeekRes.forEach(r => mergeResult(r, "Mojeek"));
+
+          // 3. Process Google results
+          googleRes.forEach(r => mergeResult(r, "Google"));
+
+          // 4. Process Qwant results
+          qwantRes.forEach(r => mergeResult(r, "Qwant"));
+
+          // 5. Process Bing results
+          bingRes.forEach(r => mergeResult(r, "Bing"));
+
+          // 6. Process Directory search results
+          dirRes.forEach(r => {
+            const directorySearchResult = this.parseDirectoryListing(r.website, r.name, r.snippet);
+            if (directorySearchResult) {
+              const resDomain = this.getRootDomain(directorySearchResult.website);
+              const existing = merged.find(m => this.getRootDomain(m.website) === resDomain);
+              if (existing) {
+                const newSrc = directorySearchResult.sources?.[0] || "Directory";
+                if (existing.sources && !existing.sources.includes(newSrc)) {
+                  existing.sources.push(newSrc);
+                }
+                const newUrl = directorySearchResult.sourceUrls?.[0] || r.website;
+                if (existing.sourceUrls && !existing.sourceUrls.includes(newUrl)) {
+                  existing.sourceUrls.push(newUrl);
+                }
+              } else {
+                merged.push(directorySearchResult);
+              }
+            }
+          });
+
+          return merged;
+        } catch (err: any) {
+          console.warn(`[SearchService] Parallel search failed for query "${query}": ${err.message}`);
+          return [];
+        }
+      });
+      const resultsLists = await Promise.all(searchPromises);
+      resultsLists.forEach(list => {
+        pooledResults.push(...list);
+      });
+    }
 
     const reqCountry = normalizeCountryName(country);
     const hasCountryMatch = pooledResults.some(r => {

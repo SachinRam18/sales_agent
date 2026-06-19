@@ -121,6 +121,16 @@ export default function App() {
     }
   }, [user, currentPage]);
 
+  // State to preserve LeadDiscovery chat history across page navigations
+  const [discoveryMessages, setDiscoveryMessages] = useState<any[]>([
+    {
+      id: "welcome",
+      role: "assistant",
+      type: "text",
+      content: "Hello! I am your Lead Discovery Agent. Tell me what kind of companies you are looking for. For example: 'Find me software companies in the USA with 200-500 employees.'"
+    }
+  ]);
+
   // Nav helper for components to route sidebar pages
   const handleNavigate = (page: string) => {
     setCurrentPage(page as any);
@@ -299,7 +309,7 @@ export default function App() {
             </div>
 
             {/* Platform indicator badge */}
-            <div className="hidden sm:flex items-center gap-1.5 text-xs font-semibold bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-[#2A3241] text-slate-700 dark:text-slate-300 px-3 py-1 rounded-full">
+            <div className="hidden sm:flex items-center gap-1.5 text-xs font-semibold bg-slate-50 dark:bg-[#1E293B] border border-slate-205 dark:border-[#2A3241] text-slate-700 dark:text-slate-300 px-3 py-1 rounded-full">
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
               Live Sandbox
             </div>
@@ -327,6 +337,8 @@ export default function App() {
             <LeadDiscovery 
               onLeadSynced={fetchNotifications}
               userRole={user ? user.role : "Viewer"} 
+              messages={discoveryMessages}
+              setMessages={setDiscoveryMessages}
             />
           )}
 

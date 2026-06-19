@@ -148,6 +148,27 @@ export class CompanyProfiler {
     if (urlLower.includes("verizon.com")) {
       return `<html><head><title>Verizon: Wireless, Broadband, and Telecom Services</title><meta name="description" content="Verizon is a major wireless carrier and broadband telecom operator providing network services."></head><body><h1>Telecom Operator Carrier</h1><p>Shop telecom mobile plans, fiber broadband internet, and enterprise carrier network systems.</p></body></html>`;
     }
+    if (urlLower.includes("siemens.com")) {
+      return `<html><head><title>Siemens: Technology for life and industrial manufacturing</title><meta name="description" content="Siemens is a global industrial manufacturer and technology leader in automation, digitalization, and machinery."></head><body><h1>Siemens Industrial Manufacturing</h1><p>We supply factory automation, heavy machinery, and PLCs in Germany.</p></body></html>`;
+    }
+    if (urlLower.includes("bosch.com")) {
+      return `<html><head><title>Bosch Global: Technology and Services Manufacturer</title><meta name="description" content="Bosch is a leading global manufacturer of industrial technologies, machinery, and smart factory automation."></head><body><h1>Bosch Factory Systems</h1><p>Providing precision engineering, factory machinery, and automotive industrial equipment in Stuttgart, Germany.</p></body></html>`;
+    }
+    if (urlLower.includes("wise.com")) {
+      return `<html><head><title>Wise: Online Money Transfers & International Banking</title><meta name="description" content="Wise is a global fintech platform for international payments, multi-currency accounts, and money transfers."></head><body><h1>Wise Fintech Banking</h1><p>We provide cross-border money transfer APIs and international fintech banking services in the UK.</p></body></html>`;
+    }
+    if (urlLower.includes("revolut.com")) {
+      return `<html><head><title>Revolut - One App, All Things Money</title><meta name="description" content="Revolut is a UK financial technology platform offering banking services, international transfers, and payments."></head><body><h1>Revolut Financial Services</h1><p>A digital banking fintech vendor providing merchant accounts and payment processing systems in London, UK.</p></body></html>`;
+    }
+    if (urlLower.includes("monzo.com")) {
+      return `<html><head><title>Monzo - More Than a Bank</title><meta name="description" content="Monzo is a UK digital bank and fintech platform offering mobile banking and business payment services."></head><body><h1>Monzo Banking Platform</h1><p>We provide online banking systems, payments, and modern fintech services in London, UK.</p></body></html>`;
+    }
+    if (urlLower.includes("starlingbank.com")) {
+      return `<html><head><title>Starling Bank - Award-Winning Digital Banking</title><meta name="description" content="Starling Bank is a UK digital bank and financial services platform offering personal and business bank accounts."></head><body><h1>Starling Banking systems</h1><p>Providing business finance, payments, and banking APIs in the United Kingdom.</p></body></html>`;
+    }
+    if (urlLower.includes("tide.co")) {
+      return `<html><head><title>Tide: Business Bank Accounts & Financial Platform</title><meta name="description" content="Tide is a leading UK business banking platform and fintech provider."></head><body><h1>Tide Fintech Platform</h1><p>We offer online banking, invoicing, and business payment solutions in the UK.</p></body></html>`;
+    }
     return "";
   }
 

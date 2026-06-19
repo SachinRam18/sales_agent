@@ -96,10 +96,31 @@ export class WebsiteEnrichmentService {
     if (urlLower.includes("delhivery.com") || urlLower.includes("delhivery")) {
       return `<html><body><p>Delhivery has over 15000 employees in India. Tech: Freight, Logistics, Transportation. Contact us at info@delhivery.com. Phone: +91-124-999999.</p></body></html>`;
     }
+    if (urlLower.includes("siemens.com")) {
+      return `<html><body><p>Siemens has a workforce of 10000+ employees in Munich, Germany. Tech: Industrial Automation, CNC, Machinery. Contact us at sales@siemens.com. Phone: +49-89-63600. LinkedIn: linkedin.com/company/siemens</p></body></html>`;
+    }
+    if (urlLower.includes("bosch.com")) {
+      return `<html><body><p>Bosch has over 20000 staff globally. Headquartered in Stuttgart, Germany. Tech: Industrial Automation, Machinery, Factory Systems. Contact support@bosch.com. Phone: +49-711-40040. LinkedIn: linkedin.com/company/bosch</p></body></html>`;
+    }
+    if (urlLower.includes("wise.com")) {
+      return `<html><body><p>Wise has over 5000 employees globally. Headquartered in London, UK. Stack: Fintech, Payments, Banking. Contact sales@wise.com or support@wise.com. Phone: +44-20-39744444. LinkedIn: linkedin.com/company/wise-payments</p></body></html>`;
+    }
+    if (urlLower.includes("revolut.com")) {
+      return `<html><body><p>Revolut has a team of 8000 staff. Headquartered in London, UK. Tech: Fintech, Payments, Banking, Investment. Contact us at sales@revolut.com or support@revolut.com. Phone: +44-20-33228352. LinkedIn: linkedin.com/company/revolut</p></body></html>`;
+    }
+    if (urlLower.includes("monzo.com")) {
+      return `<html><body><p>Monzo operates banking software systems with 2500 workforce headcount in the UK. Tech: Banking, Fintech, Payments. Contact business@monzo.com. Phone: +44-20-12345678. LinkedIn: linkedin.com/company/monzo-bank</p></body></html>`;
+    }
+    if (urlLower.includes("starlingbank.com")) {
+      return `<html><body><p>Starling Bank has 3000 employees in London, United Kingdom. Tech: Banking, Fintech, Payments. Contact contact@starlingbank.com. Phone: +44-20-71234567. LinkedIn: linkedin.com/company/starling-bank</p></body></html>`;
+    }
+    if (urlLower.includes("tide.co")) {
+      return `<html><body><p>Tide has 1000 employees in London, UK. Tech: Banking, Fintech, Payments. Contact hello@tide.co. Phone: +44-20-81234567.</p></body></html>`;
+    }
     return "";
   }
 
-  async enrich(websiteUrl: string, profile: CompanyProfile): Promise<EnrichedCompanyData> {
+  async enrich(websiteUrl: string, profile: CompanyProfile, targetCountry?: string): Promise<EnrichedCompanyData> {
     const domain = profile.domain;
     const isDevMode = process.env.NODE_ENV === "development" || !process.env.NODE_ENV;
 
@@ -349,13 +370,51 @@ export class WebsiteEnrichmentService {
     let inferredCountry = "";
     const domainLower = domain.toLowerCase();
 
-    // Check domain suffixes
-    if (domainLower.endsWith(".de")) inferredCountry = "Germany";
-    else if (domainLower.endsWith(".in")) inferredCountry = "India";
-    else if (domainLower.endsWith(".co.uk") || domainLower.endsWith(".uk")) inferredCountry = "UK";
-    else if (domainLower.endsWith(".us")) inferredCountry = "USA";
-    else if (domainLower.endsWith(".ca")) inferredCountry = "Canada";
-    else if (domainLower.endsWith(".au")) inferredCountry = "Australia";
+    // 1. Prioritize requested target country if it's explicitly matched in the text or domain
+    if (targetCountry) {
+      const targetNorm = targetCountry.toLowerCase().trim();
+      const isTargetUS = (targetNorm === "usa" || targetNorm === "us" || targetNorm === "united states" || targetNorm === "united states of america");
+      const isTargetGermany = (targetNorm === "germany" || targetNorm === "de" || targetNorm === "deutschland");
+      const isTargetIndia = (targetNorm === "india" || targetNorm === "in");
+      const isTargetUK = (targetNorm === "uk" || targetNorm === "united kingdom" || targetNorm === "gb" || targetNorm === "great britain");
+
+      if (isTargetUS && (
+        domainLower.endsWith(".us") ||
+        /\+1[-\s\(]/.test(fullText) ||
+        fullTextLower.includes("united states") || fullTextLower.includes("usa") || fullTextLower.includes("america") ||
+        fullTextLower.includes("california") || fullTextLower.includes("new york") || fullTextLower.includes("san francisco") || fullTextLower.includes("boston")
+      )) {
+        inferredCountry = "USA";
+      } else if (isTargetGermany && (
+        domainLower.endsWith(".de") ||
+        /\+49\b/.test(fullText) ||
+        fullTextLower.includes("germany") || fullTextLower.includes("deutschland") || fullTextLower.includes("munich") || fullTextLower.includes("berlin")
+      )) {
+        inferredCountry = "Germany";
+      } else if (isTargetIndia && (
+        domainLower.endsWith(".in") ||
+        /\+91\b/.test(fullText) ||
+        fullTextLower.includes("india") || fullTextLower.includes("bangalore") || fullTextLower.includes("mumbai") || fullTextLower.includes("delhi")
+      )) {
+        inferredCountry = "India";
+      } else if (isTargetUK && (
+        domainLower.endsWith(".uk") || domainLower.endsWith(".co.uk") ||
+        /\+44\b/.test(fullText) ||
+        fullTextLower.includes("united kingdom") || fullTextLower.includes("uk") || fullTextLower.includes("london")
+      )) {
+        inferredCountry = "UK";
+      }
+    }
+
+    if (!inferredCountry) {
+      // Check domain suffixes
+      if (domainLower.endsWith(".de")) inferredCountry = "Germany";
+      else if (domainLower.endsWith(".in")) inferredCountry = "India";
+      else if (domainLower.endsWith(".co.uk") || domainLower.endsWith(".uk")) inferredCountry = "UK";
+      else if (domainLower.endsWith(".us")) inferredCountry = "USA";
+      else if (domainLower.endsWith(".ca")) inferredCountry = "Canada";
+      else if (domainLower.endsWith(".au")) inferredCountry = "Australia";
+    }
 
     if (!inferredCountry) {
       // Check phone country codes in text

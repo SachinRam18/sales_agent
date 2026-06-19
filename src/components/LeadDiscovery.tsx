@@ -49,6 +49,8 @@ interface DiscoveredLead {
 interface LeadDiscoveryProps {
   onLeadSynced?: () => void;
   userRole: "Admin" | "Team Member" | "Viewer";
+  messages: ChatMessage[];
+  setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
 }
 
 type ChatMessage = {
@@ -62,19 +64,12 @@ type ChatMessage = {
   logs?: Array<{ agent: string; message: string; timestamp: string }>;
 };
 
-export default function LeadDiscovery({ onLeadSynced, userRole }: LeadDiscoveryProps) {
+export default function LeadDiscovery({ onLeadSynced, userRole, messages, setMessages }: LeadDiscoveryProps) {
   const [icpProfiles, setIcpProfiles] = useState<ICPProfile[]>([]);
   const [selectedIcpId, setSelectedIcpId] = useState("");
   const [promptText, setPromptText] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const [messages, setMessages] = useState<ChatMessage[]>([{
-    id: "welcome",
-    role: "assistant",
-    type: "text",
-    content: "Hello! I am your Lead Discovery Agent. Tell me what kind of companies you are looking for. For example: 'Find me software companies in the USA with 200-500 employees.'"
-  }]);
 
   useEffect(() => {
     fetch("/api/icp")
