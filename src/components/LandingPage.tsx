@@ -84,7 +84,7 @@ export default function LandingPage({ onStart, onLogin, isDarkMode, toggleDarkMo
       <header className="sticky top-0 bg-white dark:bg-[#151B2B]/80 backdrop-blur-md border-b border-[#E2E8F0] dark:border-[#2A3241] z-50 transition" id="landing-header">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <img src="/logo.png" alt="SalesPilot AI Logo" className="w-8 h-8 rounded-lg shadow-sm" id="landing-logo" />
+            <img src="/logo-icon.svg" alt="SalesPilot AI Logo" className="w-8 h-8" id="landing-logo" />
             <div className="flex items-center gap-1.5">
               <span className="font-semibold text-base tracking-tight text-[#0F172A] dark:text-white">SalesPilot</span>
               <span className="text-[#334155] dark:text-slate-200 font-bold text-[10px] bg-slate-100 dark:bg-slate-800 border border-[#E2E8F0] dark:border-[#2A3241] px-1.5 py-0.5 rounded-md">AI</span>
@@ -550,7 +550,7 @@ export default function LandingPage({ onStart, onLogin, isDarkMode, toggleDarkMo
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <img src="/logo.png" alt="SalesPilot AI Logo" className="w-7 h-7 rounded-lg shadow-sm" />
+              <img src="/logo-icon.svg" alt="SalesPilot AI Logo" className="w-7 h-7" />
               <span className="font-semibold text-sm text-white tracking-tight">SalesPilot AI</span>
             </div>
             <p className="text-xs leading-relaxed text-slate-400 dark:text-slate-500 font-sans">

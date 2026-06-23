@@ -63,9 +63,9 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
         {/* Logo and Headings */}
         <div className="text-center">
           <img 
-            src="/logo.png" 
+            src="/logo-icon.svg" 
             alt="SalesPilot AI Logo" 
-            className="mx-auto w-10 h-10 rounded-lg shadow-sm cursor-pointer hover:opacity-80 transition duration-200" 
+            className="mx-auto w-10 h-10 cursor-pointer hover:opacity-80 transition duration-200" 
             onClick={onBack} 
           />
           <h2 className="mt-4 text-xl font-semibold text-slate-900 dark:text-slate-50 tracking-tight">
@@ -88,7 +88,7 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
           </div>
         )}
 
-        {/* View Switcher Controls */}
+        {/* LOGIN */}
         {view === "login" && (
           <form className="mt-6 space-y-4" onSubmit={handleLogin} id="form-login">
             <div className="space-y-1">
@@ -123,7 +123,7 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
               <div>
                 <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Corporate Email Address</label>
                 <div className="relative">
-                  <Mail className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Mail className="w-3.5 h-3.5 text-sky-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="email"
                     value={email}
@@ -147,7 +147,7 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
                   </button>
                 </div>
                 <div className="relative">
-                  <Lock className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Lock className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="password"
                     value={password}
@@ -165,7 +165,7 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
               className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs py-2.5 rounded-lg shadow-sm transition-all flex items-center justify-center gap-1.5 mt-6 cursor-pointer"
               id="btn-submit-login"
             >
-              Sign In to Workbench <ArrowRight className="w-3.5 h-3.5" />
+              Sign In to Workbench <ArrowRight className="w-3.5 h-3.5 text-white" />
             </button>
 
             <div className="text-center pt-2">
@@ -181,13 +181,14 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
           </form>
         )}
 
+        {/* REGISTER */}
         {view === "register" && (
           <form className="mt-6 space-y-4" onSubmit={handleRegister} id="form-register">
             <div className="space-y-3.5">
               <div>
                 <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Professional Full Name</label>
                 <div className="relative">
-                  <User className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <User className="w-3.5 h-3.5 text-violet-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     value={name}
@@ -202,7 +203,7 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
               <div>
                 <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Corporate Email Address</label>
                 <div className="relative">
-                  <Mail className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Mail className="w-3.5 h-3.5 text-sky-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="email"
                     value={email}
@@ -233,7 +234,7 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
               className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs py-2.5 rounded-lg shadow-sm transition-all flex items-center justify-center gap-1.5 mt-6 cursor-pointer"
               id="btn-submit-register"
             >
-              Verify Active Domain <ArrowRight className="w-3.5 h-3.5" />
+              Verify Active Domain <ArrowRight className="w-3.5 h-3.5 text-white" />
             </button>
 
             <div className="text-center pt-2">
@@ -249,12 +250,13 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
           </form>
         )}
 
+        {/* FORGOT */}
         {view === "forgot" && (
           <form className="mt-6 space-y-4" onSubmit={handleForgot} id="form-forgot">
             <div>
               <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Account Recovery Email</label>
               <div className="relative">
-                <Mail className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Mail className="w-3.5 h-3.5 text-sky-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="email"
                   value={email}
@@ -285,6 +287,7 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
           </form>
         )}
 
+        {/* VERIFY */}
         {view === "verify" && (
           <form className="mt-6 space-y-4" onSubmit={handleVerify} id="form-verify">
             <div className="text-center mb-4">
@@ -294,7 +297,7 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
             <div>
               <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Enter 6-Digit Code</label>
               <div className="relative">
-                <Key className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Key className="w-3.5 h-3.5 text-amber-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   maxLength={6}
@@ -309,7 +312,7 @@ export default function AuthScreens({ onSuccess, onBack }: AuthScreensProps) {
               type="submit"
               className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs py-2.5 rounded-lg shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <Check className="w-3.5 h-3.5" /> Activate Sandbox
+              <Check className="w-3.5 h-3.5 text-emerald-400" /> Activate Sandbox
             </button>
 
             <div className="text-center pt-2">

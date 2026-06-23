@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { 
   Users, Target, Send, ShieldAlert, BadgeCheck, SlidersHorizontal, BarChart2, 
-  Puzzle, LogOut, Layout, Bell, Check, Menu, X, Sparkles, FolderLock, Moon, Sun
+  Puzzle, LogOut, Layout, Bell, Check, Menu, X, Sparkles, FolderLock, Moon, Sun, Bot, BrainCircuit
 } from "lucide-react";
 
 // Modular Views
@@ -146,8 +146,8 @@ export default function App() {
   const menuItems = [
     { id: "dashboard", label: "Dashboard", Icon: Layout },
     { id: "icp", label: "Ideal Customer Profile", Icon: Target },
-    { id: "discovery", label: "Lead Discovery Agent", Icon: SlidersHorizontal },
-    { id: "crm", label: "CRM Lead Pipeline", Icon: BadgeCheck },
+    { id: "discovery", label: "Lead Discovery Agent", Icon: Bot },
+    { id: "crm", label: "CRM Lead Pipeline", Icon: BrainCircuit },
     { id: "outreach", label: "Outreach & Copywriter", Icon: Send },
     { id: "campaigns", label: "Outbound Campaigns", Icon: BarChart2 },
     { id: "settings", label: "Integrations & API Settings", Icon: Puzzle },
@@ -177,142 +177,171 @@ export default function App() {
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="p-2 bg-white dark:bg-[#151B2B] rounded-lg shadow-sm border border-slate-200 dark:border-[#2A3241]"
         >
-          {isSidebarOpen ? <X className="w-5 h-5 text-slate-600 dark:text-slate-400" /> : <Menu className="w-5 h-5 text-slate-600 dark:text-slate-400" />}
+          {isSidebarOpen ? <X className="w-5 h-5 text-rose-500" /> : <Menu className="w-5 h-5 text-indigo-500" />}
         </button>
       </div>
 
       {/* Main Persistent Desktop Sidebar */}
-      <aside 
-        className={`bg-white dark:bg-[#151B2B] border-r border-slate-200 dark:border-[#2A3241] w-64 flex flex-col justify-between fixed h-full z-40 transition-transform duration-200
+      <aside
+        className={`bg-[#0F172A] w-56 flex flex-col fixed h-full z-40 transition-transform duration-200
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
         id="side-nav-aside"
       >
-        <div className="space-y-6 pt-6">
-          {/* Logo brand and name */}
-          <div className="px-6 flex items-center gap-2.5">
-            <img src="/logo.png" alt="SalesPilot AI Logo" className="w-8 h-8 rounded-lg shadow-sm" />
-            <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-base text-slate-900 dark:text-slate-50 tracking-tight">SalesPilot</span>
-              <span className="text-slate-800 dark:text-slate-200 font-bold text-[10px] bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-md border border-slate-200 dark:border-[#2A3241]">AI</span>
-            </div>
-          </div>
-
-          {/* Nav menu links */}
-          <nav className="space-y-1 px-3">
-            {menuItems.map((item) => {
-              const isActive = currentPage === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setCurrentPage(item.id);
-                    // Close list detail when going away from CRM to prevent awkward side view
-                    if (item.id !== "crm") setSelectedCompanyId(null);
-                  }}
-                  className={`w-full flex items-center gap-3 px-4 py-2 text-xs font-medium tracking-wide rounded-lg transition-all duration-150
-                    ${isActive ? "bg-slate-950 text-white font-semibold shadow-sm" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-slate-50 hover:bg-slate-100 dark:hover:bg-slate-700"}`}
-                >
-                  <item.Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-900 dark:text-slate-50"}`} />
-                  {item.label}
-                </button>
-              );
-            })}
-          </nav>
+        {/* Logo */}
+        <div className="px-5 py-5 flex items-center gap-2.5">
+          <img src="/logo-icon.svg" alt="SalesPilot AI" className="w-7 h-7" />
+          <span className="font-semibold text-white text-sm tracking-tight">SalesPilot</span>
+          <span className="ml-auto text-[9px] font-bold text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded">AI</span>
         </div>
 
-        {/* User login overview & actions bottom sidebar block */}
-        {user && (
-          <div className="p-4 border-t border-slate-150 space-y-3 bg-slate-50 dark:bg-[#1E293B]/55">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-700 dark:text-slate-300 font-bold text-xs border border-slate-300">
-                {user.name.split(" ").map(w => w[0]).join("")}
-              </div>
-              <div className="truncate text-xs">
-                <span className="font-semibold text-slate-800 dark:text-slate-200 block truncate">{user.name}</span>
-                <span className="text-[10px] text-slate-400 dark:text-slate-500 block truncate font-mono">{user.email}</span>
-                <span className="text-[9px] bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-[#2A3241] text-slate-600 dark:text-slate-400 font-medium px-1.5 py-0.5 rounded-md inline-block mt-1 uppercase">
-                  {user.role}
-                </span>
-              </div>
-            </div>
+        {/* Nav */}
+        <nav className="flex-1 px-2 space-y-0.5 overflow-y-auto pb-4">
+          {menuItems.map((item) => {
+            const isActive = currentPage === item.id;
+            const iconColors: Record<string, string> = {
+              dashboard: "text-indigo-400",
+              icp:       "text-emerald-400",
+              discovery: "text-blue-400",
+              crm:       "text-violet-400",
+              outreach:  "text-sky-400",
+              campaigns: "text-amber-400",
+              settings:  "text-slate-400",
+            };
+            return (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setCurrentPage(item.id);
+                  if (item.id !== "crm") setSelectedCompanyId(null);
+                }}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[11px] font-medium transition-all group
+                  ${isActive
+                    ? "bg-white/10 text-white"
+                    : "text-slate-400 hover:text-white hover:bg-white/5"
+                  }`}
+              >
+                <item.Icon className={`w-4 h-4 shrink-0 ${isActive ? iconColors[item.id] : "text-slate-500 group-hover:text-slate-300"}`} />
+                <span className="truncate">{item.label}</span>
+              </button>
+            );
+          })}
+        </nav>
 
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-[10px] font-semibold text-slate-500 dark:text-slate-400 hover:text-rose-600 border border-slate-200 dark:border-[#2A3241] bg-white dark:bg-[#151B2B] rounded-md hover:bg-slate-50 dark:hover:bg-[#0F172A] transition shadow-sm"
-            >
-              <LogOut className="w-3.5 h-3.5" /> Log Out
-            </button>
+        {/* User */}
+        {user && (
+          <div className="px-3 py-3 border-t border-white/10">
+            <div className="flex items-center gap-2.5 px-2 py-2 rounded-lg">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-bold text-[10px] shrink-0">
+                {user.name.split(" ").map(w => w[0]).join("").slice(0, 2)}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[11px] font-semibold text-white truncate leading-none">{user.name}</div>
+                <div className="text-[9px] text-slate-500 truncate mt-0.5">{user.role}</div>
+              </div>
+              <button onClick={handleLogout} title="Sign out" className="p-1 rounded-md text-slate-500 hover:text-rose-400 hover:bg-white/5 transition">
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         )}
       </aside>
 
       {/* Main workspace container */}
-      <main className="flex-1 md:pl-64 flex flex-col min-h-screen relative" id="workspace-main">
+      <main className="flex-1 md:pl-56 flex flex-col min-h-screen relative" id="workspace-main">
         
-        {/* Top telemetry bar */}
-        <header className="sticky top-0 bg-white dark:bg-[#151B2B]/85 backdrop-blur-md border-b border-slate-200 dark:border-[#2A3241] h-16 flex items-center justify-between px-4 sm:px-6 z-30">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span className="text-xs font-medium text-slate-600 dark:text-slate-400 tracking-tight">
-              SDR Pipeline Connected
-            </span>
+        {/* Top header bar */}
+        <header className="sticky top-0 z-30 bg-white/80 dark:bg-[#0F172A]/80 backdrop-blur-md border-b border-slate-200 dark:border-[#1E293B] h-14 flex items-center justify-between px-4 sm:px-6">
+
+          {/* Left — current page context */}
+          <div className="flex items-center gap-3">
+            {/* Page label derived from current route */}
+            <div className="flex items-center gap-2">
+              {(() => {
+                const PAGE_META: Record<string, { label: string; color: string; dot: string }> = {
+                  dashboard:  { label: "Dashboard",              color: "text-indigo-600 dark:text-indigo-400",  dot: "bg-indigo-500" },
+                  icp:        { label: "Ideal Customer Profile", color: "text-emerald-600 dark:text-emerald-400",dot: "bg-emerald-500" },
+                  discovery:  { label: "Lead Discovery",         color: "text-blue-600 dark:text-blue-400",      dot: "bg-blue-500" },
+                  crm:        { label: "CRM Pipeline",           color: "text-violet-600 dark:text-violet-400",  dot: "bg-violet-500" },
+                  outreach:   { label: "Outreach Agent",         color: "text-sky-600 dark:text-sky-400",        dot: "bg-sky-500" },
+                  campaigns:  { label: "Campaigns",              color: "text-amber-600 dark:text-amber-400",    dot: "bg-amber-500" },
+                  settings:   { label: "Integrations",           color: "text-slate-600 dark:text-slate-400",    dot: "bg-slate-400" },
+                };
+                const meta = PAGE_META[currentPage] ?? PAGE_META.dashboard;
+                return (
+                  <>
+                    <span className={`w-2 h-2 rounded-full shrink-0 ${meta.dot}`} />
+                    <span className={`text-sm font-semibold ${meta.color}`}>{meta.label}</span>
+                  </>
+                );
+              })()}
+            </div>
+
+            {/* Separator + pipeline status */}
+            <div className="hidden sm:flex items-center gap-2 pl-3 border-l border-slate-200 dark:border-[#1E293B]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">SDR Pipeline Connected</span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            
-            {/* Theme Toggle */}
+          {/* Right — actions */}
+          <div className="flex items-center gap-2">
+
+            {/* Theme toggle */}
             <button
               onClick={() => setIsDarkMode(!isDarkMode)}
-              className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-lg border border-slate-200 dark:border-[#2A3241] transition shadow-sm"
               title="Toggle theme"
+              className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             >
-              {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {isDarkMode
+                ? <Sun className="w-4 h-4 text-amber-400" />
+                : <Moon className="w-4 h-4 text-indigo-400" />}
             </button>
 
-            {/* Notifications panel Bell */}
+            {/* Notifications */}
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-lg border border-slate-200 dark:border-[#2A3241] relative transition shadow-sm"
-                title="Notifications feed"
+                title="Notifications"
+                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition relative"
               >
-                <Bell className="w-4 h-4" />
+                <Bell className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                 {notifications.some(n => !n.read) && (
-                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-rose-500 rounded-full"></span>
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full border-2 border-white dark:border-[#0F172A]" />
                 )}
               </button>
 
               {showNotifications && (
-                <div className="absolute right-0 mt-2.5 w-80 bg-white dark:bg-[#151B2B] border border-slate-200 dark:border-[#2A3241] rounded-xl shadow-xl p-4 space-y-3 z-50 animate-fade-in-up">
-                  <div className="flex items-center justify-between border-b pb-2 border-slate-100 dark:border-[#1E293B]">
-                    <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">Orchestrator Logs</span>
-                    <button 
-                      onClick={clearNotifications}
-                      className="text-[10px] text-blue-650 font-semibold hover:underline"
-                    >
-                      Clear All
+                <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-[#151B2B] border border-slate-200 dark:border-[#2A3241] rounded-2xl shadow-2xl overflow-hidden z-50">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-[#1E293B] bg-slate-50 dark:bg-[#1E293B]/60">
+                    <div className="flex items-center gap-1.5">
+                      <Bell className="w-3.5 h-3.5 text-amber-500" />
+                      <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">Agent Notifications</span>
+                    </div>
+                    <button onClick={clearNotifications} className="text-[10px] text-indigo-500 font-semibold hover:underline">
+                      Clear all
                     </button>
                   </div>
-                  <div className="space-y-3 max-h-[250px] overflow-y-auto">
+                  <div className="max-h-[300px] overflow-y-auto divide-y divide-slate-100 dark:divide-[#1E293B]">
                     {notifications.map((n) => (
-                      <div key={n.id} className="text-[11px] leading-relaxed">
-                        <p className={`text-slate-600 dark:text-slate-400 ${!n.read ? "font-semibold text-slate-900 dark:text-slate-50" : ""}`}>{n.message}</p>
-                        <span className="text-[9px] text-slate-400 dark:text-slate-500 font-mono mt-0.5 block">{new Date(n.timestamp).toLocaleTimeString()}</span>
+                      <div key={n.id} className={`px-4 py-3 ${!n.read ? "bg-indigo-50/40 dark:bg-indigo-950/20" : ""}`}>
+                        <p className={`text-[11px] leading-relaxed ${!n.read ? "font-semibold text-slate-800 dark:text-slate-100" : "text-slate-500 dark:text-slate-400"}`}>{n.message}</p>
+                        <span className="text-[9px] text-slate-400 font-mono mt-0.5 block">{new Date(n.timestamp).toLocaleTimeString()}</span>
                       </div>
                     ))}
                     {notifications.length === 0 && (
-                      <p className="text-xs text-slate-400 dark:text-slate-500 text-center py-2">No alerts on record.</p>
+                      <p className="text-xs text-slate-400 text-center py-6">No notifications yet.</p>
                     )}
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Platform indicator badge */}
-            <div className="hidden sm:flex items-center gap-1.5 text-xs font-semibold bg-slate-50 dark:bg-[#1E293B] border border-slate-205 dark:border-[#2A3241] text-slate-700 dark:text-slate-300 px-3 py-1 rounded-full">
-              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-              Live Sandbox
+            {/* Live sandbox badge */}
+            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              Live
             </div>
+
           </div>
         </header>
 
