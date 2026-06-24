@@ -155,7 +155,7 @@ Fields required:
 }`;
 
     try {
-      const result = await generateJSON(prompt, null, 3000);
+      const result = await generateJSON(prompt, null, 1000);
       if (result && result.linkedinMessageObj && result.emailObj && result.followUpObj && result.day1Email) {
         await db.addActivity("outreach_generated", `AI-generated outreach sequence for "${contactName}" (${contactRole}) at ${companyName}`, "sachinram6363@gmail.com", companyName);
         return {

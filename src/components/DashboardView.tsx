@@ -381,33 +381,33 @@ export default function DashboardView({ onNavigateTo, onSelectCompany, userRole 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* AI Recommendations */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm relative overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm relative overflow-hidden">
           <div className="absolute -right-6 -top-6 w-32 h-32 bg-violet-600/10 rounded-full blur-2xl pointer-events-none" />
           <div className="flex items-center gap-2 mb-4">
-            <div className="w-7 h-7 rounded-lg bg-violet-500/20 flex items-center justify-center">
-              <Sparkles className="w-3.5 h-3.5 text-violet-400" />
+            <div className="w-7 h-7 rounded-lg bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center">
+              <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400" />
             </div>
             <div>
-              <h3 className="font-semibold text-sm text-white">AI Agent Insights</h3>
-              <p className="text-[10px] text-slate-500 font-mono">Qualification & pipeline optimisation</p>
+              <h3 className="font-semibold text-sm text-slate-900 dark:text-white">AI Agent Insights</h3>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">Qualification & pipeline optimisation</p>
             </div>
           </div>
           <div className="space-y-3">
             {aiRecommendations.length === 0 && (
-              <p className="text-xs text-slate-500 text-center py-4">No recommendations yet.</p>
+              <p className="text-xs text-slate-400 text-center py-4">No recommendations yet.</p>
             )}
             {aiRecommendations.map((rec) => (
-              <div key={rec.id} className="bg-slate-800/60 border border-slate-700/60 rounded-xl p-3.5 space-y-1.5">
+              <div key={rec.id} className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 rounded-xl p-3.5 space-y-1.5">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-semibold text-teal-400 truncate">{rec.title}</span>
+                  <span className="text-xs font-semibold text-teal-600 dark:text-teal-400 truncate">{rec.title}</span>
                   <span className={`shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded ${
-                    rec.impact === "High"   ? "bg-rose-500/20 text-rose-300"
-                    : rec.impact === "Medium" ? "bg-amber-500/20 text-amber-300"
-                    : "bg-slate-600/40 text-slate-400"}`}>
+                    rec.impact === "High"   ? "bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-300"
+                    : rec.impact === "Medium" ? "bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-300"
+                    : "bg-slate-200 dark:bg-slate-600/40 text-slate-500 dark:text-slate-400"}`}>
                     {rec.impact}
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-400 leading-relaxed">{rec.description}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">{rec.description}</p>
               </div>
             ))}
           </div>
@@ -451,20 +451,21 @@ export default function DashboardView({ onNavigateTo, onSelectCompany, userRole 
         </div>
       </div>
 
-      {/* ── Row 6: Quick nav shortcuts ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      {/* ── Row 6: Module nav strip ── */}
+      <div className="bg-white dark:bg-[#151B2B] border border-slate-200 dark:border-[#2A3241] rounded-2xl px-4 py-3 flex flex-wrap items-center gap-1.5 shadow-sm">
+        <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mr-2">Jump to</span>
         {[
-          { label: "ICP Manager",      icon: Target,      color: "text-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-950/30", nav: "icp" },
-          { label: "Discover Leads",   icon: Bot,         color: "text-indigo-500",  bg: "bg-indigo-50 dark:bg-indigo-950/30",  nav: "discovery" },
-          { label: "CRM Pipeline",     icon: BrainCircuit,color: "text-violet-500",  bg: "bg-violet-50 dark:bg-violet-950/30",  nav: "crm" },
-          { label: "Outreach Agent",   icon: Send,        color: "text-sky-500",     bg: "bg-sky-50 dark:bg-sky-950/30",        nav: "outreach" },
-          { label: "Campaigns",        icon: BarChart3,   color: "text-amber-500",   bg: "bg-amber-50 dark:bg-amber-950/30",    nav: "campaigns" },
-          { label: "Integrations",     icon: Layers,      color: "text-slate-500",   bg: "bg-slate-100 dark:bg-slate-800/50",   nav: "settings" },
-        ].map(({ label, icon: Icon, color, bg, nav }) => (
-          <button key={label} onClick={() => onNavigateTo(nav)}
-            className={`${bg} border border-slate-200 dark:border-[#2A3241] rounded-xl p-3.5 flex flex-col items-center gap-2 hover:shadow-md hover:scale-[1.02] transition-all`}>
-            <Icon className={`w-5 h-5 ${color}`} />
-            <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 text-center leading-tight">{label}</span>
+          { label: "ICP Manager",    icon: Target,       color: "text-emerald-500", nav: "icp" },
+          { label: "Discover Leads", icon: Bot,          color: "text-indigo-500",  nav: "discovery" },
+          { label: "CRM Pipeline",   icon: BrainCircuit, color: "text-violet-500",  nav: "crm" },
+          { label: "Outreach",       icon: Send,         color: "text-sky-500",     nav: "outreach" },
+          { label: "Campaigns",      icon: BarChart3,    color: "text-amber-500",   nav: "campaigns" },
+          { label: "Integrations",   icon: Layers,       color: "text-slate-400",   nav: "settings" },
+        ].map(({ label, icon: Icon, color, nav }) => (
+          <button key={nav} onClick={() => onNavigateTo(nav)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+            <Icon className={`w-3.5 h-3.5 ${color}`} />
+            {label}
           </button>
         ))}
       </div>
