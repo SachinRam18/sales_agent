@@ -5,7 +5,7 @@ import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
 
 import * as db from "./src/db";
-import { leadDiscoveryAgent } from "./src/agents/LeadDiscoveryAgent";
+import { leadDiscoveryAgent, normalizeCountryName } from "./src/agents/LeadDiscoveryAgent";
 import { prospectEnrichmentAgent } from "./src/agents/ProspectEnrichmentAgent";
 import { leadQualificationAgent } from "./src/agents/LeadQualificationAgent";
 import { crmAgent } from "./src/agents/CRMAgent";
@@ -179,13 +179,25 @@ app.all("/api/search-leads", async (req, res) => {
       addLog: (msg) => addLog("Lead Discovery Agent", msg)
     });
 
-    // Agent 2: Prospect Enrichment Agent
+     // Agent 2: Prospect Enrichment Agent
     const enrichedCompanies: any[] = [];
     for (const company of discoveredCompanies) {
       const enriched = await prospectEnrichmentAgent.enrich(
         company,
         (msg) => addLog("Prospect Enrichment Agent", msg)
       );
+
+      // Post-enrichment country validation filter
+      const reqCountry = normalizeCountryName(country);
+      const finalCountry = normalizeCountryName(enriched.location || "");
+      if (reqCountry && finalCountry) {
+        const countryMatches = (finalCountry.includes(reqCountry) || reqCountry.includes(finalCountry) || finalCountry === reqCountry);
+        if (!countryMatches) {
+          addLog("Lead Discovery Agent", `Post-enrichment filter: Skipping "${company.name}" because its actual location "${enriched.location}" does not match requested "${country}".`);
+          continue;
+        }
+      }
+
       enrichedCompanies.push(enriched);
     }
 

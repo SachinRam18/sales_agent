@@ -268,6 +268,7 @@ export default function CrmModule({ onCompanySelected, selectedCompanyId, onClos
                       <tr className="border-b border-slate-100 dark:border-[#1E293B] bg-slate-50 dark:bg-[#1E293B]/60 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                         <th className="py-3 px-5">Company</th>
                         <th className="py-3 px-4">Industry · Location</th>
+                        <th className="py-3 px-4 text-center">LinkedIn</th>
                         <th className="py-3 px-4 text-center">Score</th>
                         <th className="py-3 px-4">Stage</th>
                         <th className="py-3 px-5 text-right">Actions</th>
@@ -288,6 +289,17 @@ export default function CrmModule({ onCompanySelected, selectedCompanyId, onClos
                             <span className="flex items-center gap-1 text-[10px] text-slate-400 mt-0.5">
                               <MapPin className="w-2.5 h-2.5" />{c.location} · {c.employees || "?"} emp
                             </span>
+                          </td>
+                          <td className="py-3.5 px-4 text-center" onClick={(e) => e.stopPropagation()}>
+                            <a href={`https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(c.name)}`}
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/30 text-[#0A66C2] hover:bg-blue-100 dark:hover:bg-blue-950/60 hover:text-blue-700 transition"
+                               title="Search Company on LinkedIn">
+                              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+                              </svg>
+                            </a>
                           </td>
                           <td className="py-3.5 px-4 text-center"><ScorePill score={c.score} /></td>
                           <td className="py-3.5 px-4" onClick={(e) => e.stopPropagation()}>
@@ -482,10 +494,10 @@ export default function CrmModule({ onCompanySelected, selectedCompanyId, onClos
               </div>
             )}
 
-            {/* Contacts */}
+            {/* Contacts & Outreach */}
             <div className="bg-white dark:bg-[#151B2B] border border-slate-200 dark:border-[#2A3241] rounded-2xl p-4 shadow-sm space-y-3">
               <h3 className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-indigo-400" /> Decision Makers
+                <User className="w-3.5 h-3.5 text-indigo-400" /> Contacts & Outreach
               </h3>
               <div className="space-y-2.5">
                 {detailContacts.map((contact) => (
@@ -505,6 +517,13 @@ export default function CrmModule({ onCompanySelected, selectedCompanyId, onClos
                       <div className="flex items-center gap-1.5"><Mail className="w-3 h-3 text-sky-400" />{contact.email}</div>
                       <div className="flex items-center gap-1.5"><Phone className="w-3 h-3 text-emerald-400" />{contact.phone || "No direct phone"}</div>
                     </div>
+                    {contact.linkedin && contact.linkedin !== "#" && (
+                      <a href={contact.linkedin} target="_blank" rel="noopener noreferrer"
+                        className="w-full mt-1.5 py-1.5 rounded-lg text-[10px] font-semibold bg-[#0A66C2] hover:bg-[#004182] text-white transition flex items-center justify-center gap-1 shadow-sm">
+                        <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+                        View LinkedIn Profile
+                      </a>
+                    )}
                     <button onClick={() => handleFetchExecutiveIntel(contact)}
                       className="w-full mt-1 py-1.5 rounded-lg text-[10px] font-semibold bg-slate-50 dark:bg-[#1E293B] hover:bg-violet-50 dark:hover:bg-violet-950/20 text-slate-600 dark:text-slate-300 hover:text-violet-700 border border-slate-200 dark:border-[#2A3241] transition flex items-center justify-center gap-1">
                       <BrainCircuit className="w-3 h-3 text-teal-500" /> Executive Intel

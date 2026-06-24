@@ -170,18 +170,28 @@ export class LeadDiscoveryAgent {
           addLog(`Skipping candidate "${profile.companyName}" due to country mismatch (Requested: ${country}, Detected: ${enriched.location || res.location || "unknown"}).`);
           continue;
         }
-        
         // Calculate Discovery Confidence Score
         const sourcesList = res.sources || [res.source || "Unknown"];
         const sourceCount = sourcesList.length;
+        const isSerper = sourcesList.some(s => s.toLowerCase() === "serper");
         
         let baseConfidence = 0;
-        if (sourceCount === 1) {
-          baseConfidence = 30;
-        } else if (sourceCount === 2) {
-          baseConfidence = 60;
-        } else if (sourceCount >= 3) {
-          baseConfidence = 85;
+        if (isSerper) {
+          if (sourceCount === 1) {
+            baseConfidence = 60;
+          } else if (sourceCount === 2) {
+            baseConfidence = 75;
+          } else if (sourceCount >= 3) {
+            baseConfidence = 90;
+          }
+        } else {
+          if (sourceCount === 1) {
+            baseConfidence = 30;
+          } else if (sourceCount === 2) {
+            baseConfidence = 60;
+          } else if (sourceCount >= 3) {
+            baseConfidence = 85;
+          }
         }
 
         let modifiers = 0;
@@ -198,6 +208,14 @@ export class LeadDiscoveryAgent {
         const hasDirectory = sourcesList.some(s => directoriesList.includes(s));
         if (hasDirectory) {
           modifiers += 10; // Industry directory validation
+        }
+
+        const matchedQueries = (res as any).matchedQueries || [];
+        const queryCount = matchedQueries.length;
+        if (queryCount >= 3) {
+          modifiers += 15; // Found across 3+ different query variants
+        } else if (queryCount === 2) {
+          modifiers += 10; // Found across 2 different query variants
         }
 
         const discoveryConfidence = Math.min(100, baseConfidence + modifiers);

@@ -48,6 +48,7 @@ function ConfBadge({ level }: { level?: string }) {
 }
 
 function LeadCard({ lead, synced, onSync }: { lead: DiscoveredLead; synced: boolean; onSync: () => void }) {
+  const companyLinkedin = lead.contacts?.find(c => c.linkedin?.includes("/company/"))?.linkedin || "https://www.linkedin.com/search/results/all/?keywords=" + encodeURIComponent(lead.name);
   return (
     <div className="bg-white dark:bg-[#151B2B] border border-slate-200 dark:border-[#2A3241] rounded-2xl overflow-hidden hover:shadow-md transition-shadow">
       {/* Card top */}
@@ -56,7 +57,10 @@ function LeadCard({ lead, synced, onSync }: { lead: DiscoveredLead; synced: bool
           <div className="flex items-center gap-2">
             <div className="font-semibold text-sm text-slate-900 dark:text-slate-50 truncate">{lead.name}</div>
             <a href={lead.website} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-indigo-500 transition shrink-0">
-              <ExternalLink className="w-3 h-3" />
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+            <a href={companyLinkedin} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-blue-500 transition shrink-0 flex items-center" title="Company LinkedIn">
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
             </a>
           </div>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-0.5">
@@ -116,22 +120,42 @@ function LeadCard({ lead, synced, onSync }: { lead: DiscoveredLead; synced: bool
       </div>
 
       {/* Contacts + action */}
-      <div className="px-4 py-3 border-t border-slate-100 dark:border-[#1E293B] flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1 text-[10px] text-slate-400">
-          {lead.contacts.length > 0
-            ? <><User className="w-3 h-3" /> {lead.contacts.length} contact{lead.contacts.length > 1 ? "s" : ""} found</>
-            : <span className="italic">No contacts</span>}
-        </div>
-        {synced ? (
-          <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 text-[11px] font-semibold">
-            <BadgeCheck className="w-3.5 h-3.5" /> Synced to CRM
-          </span>
-        ) : (
-          <button onClick={onSync}
-            className="inline-flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-semibold px-3 py-1.5 rounded-xl transition shadow-sm">
-            <ChevronRight className="w-3 h-3" /> Import to CRM
-          </button>
+      <div className="px-4 py-3 border-t border-slate-100 dark:border-[#1E293B] flex flex-col gap-2">
+        {lead.contacts && lead.contacts.length > 0 && (
+          <div className="space-y-1.5 mb-1 border-b border-slate-100 dark:border-[#1E293B]/40 pb-2">
+            {lead.contacts.map((c, idx) => (
+              <div key={idx} className="flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-400">
+                <div className="flex items-center gap-1.5 truncate">
+                  <User className="w-3 h-3 text-slate-400 shrink-0" />
+                  <span className="font-medium text-slate-800 dark:text-slate-300 truncate">{c.name}</span>
+                  <span className="text-slate-400 dark:text-slate-500 text-[10px]">({c.role})</span>
+                </div>
+                {c.linkedin && c.linkedin !== "#" && (
+                  <a href={c.linkedin} target="_blank" rel="noopener noreferrer" className="text-[#0A66C2] hover:text-blue-700 transition flex items-center gap-0.5 ml-2 shrink-0">
+                    <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
         )}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1 text-[10px] text-slate-400">
+            {lead.contacts.length > 0
+              ? <><User className="w-3 h-3" /> {lead.contacts.length} contact{lead.contacts.length > 1 ? "s" : ""} found</>
+              : <span className="italic">No contacts</span>}
+          </div>
+          {synced ? (
+            <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 text-[11px] font-semibold">
+              <BadgeCheck className="w-3.5 h-3.5" /> Synced to CRM
+            </span>
+          ) : (
+            <button onClick={onSync}
+              className="inline-flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-semibold px-3 py-1.5 rounded-xl transition shadow-sm">
+              <ChevronRight className="w-3 h-3" /> Import to CRM
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

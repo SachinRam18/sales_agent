@@ -433,6 +433,14 @@ export class SearchService {
           }
         });
 
+        // Merge matched queries
+        if (res.matchedQuery) {
+          (existing as any).matchedQueries = (existing as any).matchedQueries || [];
+          if (!(existing as any).matchedQueries.includes(res.matchedQuery)) {
+            (existing as any).matchedQueries.push(res.matchedQuery);
+          }
+        }
+
         // Merge location
         if (res.location && !existing.location) {
           existing.location = res.location;
@@ -452,8 +460,9 @@ export class SearchService {
           ...res,
           sources: res.sources || [res.source],
           sourceUrls: res.sourceUrls || [res.website],
-          location: res.location || country
-        });
+          location: res.location,
+          matchedQueries: res.matchedQuery ? [res.matchedQuery] : []
+        } as any);
       }
     });
 

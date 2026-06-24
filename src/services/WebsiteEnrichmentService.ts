@@ -380,27 +380,31 @@ export class WebsiteEnrichmentService {
 
       if (isTargetUS && (
         domainLower.endsWith(".us") ||
-        /\+1[-\s\(]/.test(fullText) ||
-        fullTextLower.includes("united states") || fullTextLower.includes("usa") || fullTextLower.includes("america") ||
-        fullTextLower.includes("california") || fullTextLower.includes("new york") || fullTextLower.includes("san francisco") || fullTextLower.includes("boston")
+        (/\+1[-\s\(]/.test(fullText) && !/\+44\b/.test(fullText) && !/\+49\b/.test(fullText) && !/\+91\b/.test(fullText)) ||
+        ((fullTextLower.includes("united states") || fullTextLower.includes("usa") || fullTextLower.includes("america") ||
+        fullTextLower.includes("california") || fullTextLower.includes("new york") || fullTextLower.includes("san francisco") || fullTextLower.includes("boston")) &&
+        !domainLower.endsWith(".uk") && !domainLower.endsWith(".co.uk") && !domainLower.endsWith(".de") && !domainLower.endsWith(".in"))
       )) {
         inferredCountry = "USA";
       } else if (isTargetGermany && (
         domainLower.endsWith(".de") ||
-        /\+49\b/.test(fullText) ||
-        fullTextLower.includes("germany") || fullTextLower.includes("deutschland") || fullTextLower.includes("munich") || fullTextLower.includes("berlin")
+        (/\+49\b/.test(fullText) && !/\+1[-\s\(]/.test(fullText) && !/\+44\b/.test(fullText) && !/\+91\b/.test(fullText)) ||
+        ((fullTextLower.includes("germany") || fullTextLower.includes("deutschland") || fullTextLower.includes("munich") || fullTextLower.includes("berlin")) &&
+        !domainLower.endsWith(".us") && !domainLower.endsWith(".uk") && !domainLower.endsWith(".co.uk") && !domainLower.endsWith(".in"))
       )) {
         inferredCountry = "Germany";
       } else if (isTargetIndia && (
         domainLower.endsWith(".in") ||
-        /\+91\b/.test(fullText) ||
-        fullTextLower.includes("india") || fullTextLower.includes("bangalore") || fullTextLower.includes("mumbai") || fullTextLower.includes("delhi")
+        (/\+91\b/.test(fullText) && !/\+1[-\s\(]/.test(fullText) && !/\+44\b/.test(fullText) && !/\+49\b/.test(fullText)) ||
+        ((fullTextLower.includes("india") || fullTextLower.includes("bangalore") || fullTextLower.includes("mumbai") || fullTextLower.includes("delhi")) &&
+        !domainLower.endsWith(".us") && !domainLower.endsWith(".uk") && !domainLower.endsWith(".co.uk") && !domainLower.endsWith(".de"))
       )) {
         inferredCountry = "India";
       } else if (isTargetUK && (
         domainLower.endsWith(".uk") || domainLower.endsWith(".co.uk") ||
-        /\+44\b/.test(fullText) ||
-        fullTextLower.includes("united kingdom") || fullTextLower.includes("uk") || fullTextLower.includes("london")
+        (/\+44\b/.test(fullText) && !/\+1[-\s\(]/.test(fullText) && !/\+49\b/.test(fullText) && !/\+91\b/.test(fullText)) ||
+        ((fullTextLower.includes("united kingdom") || fullTextLower.includes("uk") || fullTextLower.includes("london")) &&
+        !domainLower.endsWith(".us") && !domainLower.endsWith(".de") && !domainLower.endsWith(".in"))
       )) {
         inferredCountry = "UK";
       }
